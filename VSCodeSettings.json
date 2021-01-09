@@ -1,0 +1,55 @@
+{
+    "terminal.integrated.commandsToSkipShell": [
+        "language-julia.interrupt"
+    ],
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "workbench.statusBar.visible": true,
+    "workbench.activityBar.visible": true,
+    "workbench.sideBar.location": "right",
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#211f1e",
+        "titleBar.inactiveBackground": "#211f1e",
+        "titleBar.activeForeground": "#666",
+        "titleBar.inactiveForeground": "#666",
+        "titleBar.border": "#0000",
+        "editorGroupHeader.tabsBackground": "#211f1e",
+        "editorGroupHeader.border": "#0000",
+        // アクティブタブ
+        "tab.activeBackground": "#444",
+        "tab.activeForeground": "#929290",
+        // 非アクティブタブ
+        "tab.inactiveBackground": "#211f1e",
+        "tab.inactiveForeground": "#555",
+        // タブ間のボーダー
+        "tab.border": "#1E1F29",
+        "tab.activeBorder": "#e8a592",
+        // Tab bottom border
+        "breadcrumb.background": "#211f1e",
+        "breadcrumb.foreground": "#777",
+        "editor.background": "#211f1e",
+        "editorLineNumber.activeForeground": "#e8a592",
+        "editorGutter.background": "#211f1e",
+        "activityBar.background": "#211f1e",
+        "activityBar.foreground": "#666",
+        "activityBar.border": "#0000",
+        "activityBarBadge.background": "#e8a592",
+        "sideBar.background": "#191a23",
+        "statusBar.background": "#211f1e",
+        "statusBar.foreground": "#666",
+        "statusBar.border": "#0000",
+        "statusBarItem.remoteBackground": "#0000",
+        "statusBarItem.remoteForeground": "#999"
+    },
+    "workbench.colorTheme": "βui - Zenburn",
+    "workbench.iconTheme": "minimalistic-icons",
+    "window.menuBarVisibility": "toggle",
+    "window.title": "${activeEditorShort}",
+    "window.titleBarStyle": "custom",
+    "editor.fontFamily": "Cica, Consolas, 'Courier New', monospace",
+    "editor.wordWrap": "on",
+    "editor.minimap.side": "left",
+    "zenMode.fullScreen": false,
+    "pasteImage.path": "${currentFileDir}\\img",
+}

@@ -1,0 +1,233 @@
+{
+    // ドキュメント: https://aka.ms/terminal-documentation
+    // wtでaltを押しながら設定ボタンをクリックするとdefault.jsonが開く
+    // GUIDの発行  Powershellにて ```[guid]::NewGuid()```  を実行
+    "$schema": "https://aka.ms/terminal-profiles-schema",
+    "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+    "initialPosition": "50,0",
+    "initialCols": 120,
+    "initialRows": 35,
+    "copyOnSelect": false,
+    "copyFormatting": false,
+    "profiles":
+    {
+        "defaults":
+        {
+            "useAcrylic": true,
+            "acrylicOpacity": 0.8,
+            "fontFace": "Cica",
+            "colorScheme": "Wez",
+            "padding": "15,15",
+            "scrollbarState": "hidden"
+        },
+        "list":
+        [
+            {
+                "guid": "{1b10f722-b931-48d5-94e5-f0b5e9bcc6bf}",
+                "name": "NuShell",
+                "commandline": "nu",
+                "startingDirectory": "%USERPROFILE%",
+                "icon": "C:/Users/oksho/OneDrive/asset/icons/terminal/nushell.png",
+                "hidden": true
+            },
+            {
+                "guid": "{58ad8b0c-3ef8-5f4d-bc6f-13e4c00f2530}",
+                "name": "Debian",
+                "source": "Windows.Terminal.Wsl",
+                "startingDirectory": "//wsl$/Debian/home/okshouiti",
+                "icon": "C:/Users/oksho/OneDrive/asset/icons/terminal/debian.png"
+            },
+            {
+                "guid": "{1b2ae38b-cbef-4437-a9fb-e935b60f2e95}",
+                "name": "Julia",
+                "commandline": "julia --quiet --sysimage sysimage.so",
+                "startingDirectory": "%USERPROFILE%",
+                "icon": "C:/Users/oksho/OneDrive/asset/icons/terminal/julia.png",
+                "hidden": true
+            },
+            {
+                "guid": "{cbb2f9ba-8490-434e-99e1-f49f4b494a72}",
+                "name": "Julia",
+                "commandline": "wsl julia --quiet --sysimage sysimage.so",
+                "startingDirectory": "//wsl$/fedoraremix/home/okshouiti",
+                "icon": "C:/Users/oksho/OneDrive/asset/icons/terminal/julia.png"
+            },
+            {
+                "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+                "name": "PowerShell",
+                "source": "Windows.Terminal.PowershellCore",
+                "startingDirectory": "%USERPROFILE%"
+            },
+            {
+                "guid": "{d3f31bee-5823-5ed8-8e04-f31ed54f2cd9}",
+                "name": "fedoraremix",
+                "source": "Windows.Terminal.Wsl",
+                "startingDirectory": "//wsl$/fedoraremix/home/okshouiti",
+                "icon": "C:/Users/oksho/OneDrive/asset/icons/terminal/fedora.png"
+            },
+            {
+                "guid": "{1777cdf0-b2c4-5a63-a204-eb60f349ea7c}",
+                "name": "Alpine",
+                "source": "Windows.Terminal.Wsl",
+                "startingDirectory": "//wsl$/Alpine/home/okshouiti",
+                "icon": "C:/Users/oksho/OneDrive/asset/icons/terminal/alpine.png"
+            },
+            {
+                "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+                "name": "Windows PowerShell",
+                "commandline": "powershell.exe",
+                "hidden": true
+            },
+            {
+                "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
+                "name": "CMD",
+                "commandline": "cmd.exe",
+                "hidden": true
+            },
+            {
+                "guid": "{b453ae62-4e3d-5e58-b989-0a998ec441b8}",
+                "name": "Azure Cloud Shell",
+                "source": "Windows.Terminal.Azure",
+                "hidden": true
+            },
+        ]
+    },
+    //  https://atomcorp.github.io/themes/
+    "schemes":
+    [
+        {
+            "name": "ayu",
+            "black": "#000000",
+            "red": "#ff3333",
+            "green": "#b8cc52",
+            "yellow": "#e7c547",
+            "blue": "#36a3d9",
+            "purple": "#f07178",
+            "cyan": "#95e6cb",
+            "white": "#ffffff",
+            "brightBlack": "#323232",
+            "brightRed": "#ff6565",
+            "brightGreen": "#eafe84",
+            "brightYellow": "#fff779",
+            "brightBlue": "#68d5ff",
+            "brightPurple": "#ffa3aa",
+            "brightCyan": "#c7fffd",
+            "brightWhite": "#ffffff",
+            "background": "#0f1419",
+            "foreground": "#e6e1cf"
+        },
+        {
+            "name": "Pro",
+            "black": "#000000",
+            "red": "#990000",
+            "green": "#00a600",
+            "yellow": "#999900",
+            "blue": "#2009db",
+            "purple": "#b200b2",
+            "cyan": "#00a6b2",
+            "white": "#bfbfbf",
+            "brightBlack": "#666666",
+            "brightRed": "#e50000",
+            "brightGreen": "#00d900",
+            "brightYellow": "#e5e500",
+            "brightBlue": "#0000ff",
+            "brightPurple": "#e500e5",
+            "brightCyan": "#00e5e5",
+            "brightWhite": "#e5e5e5",
+            "background": "#000000",
+            "foreground": "#f2f2f2"
+        },
+        {
+            "name": "Shaman",
+            "black": "#012026",
+            "red": "#b2302d",
+            "green": "#00a941",
+            "yellow": "#5e8baa",
+            "blue": "#449a86",
+            "purple": "#00599d",
+            "cyan": "#5d7e19",
+            "white": "#405555",
+            "brightBlack": "#384451",
+            "brightRed": "#ff4242",
+            "brightGreen": "#2aea5e",
+            "brightYellow": "#8ed4fd",
+            "brightBlue": "#61d5ba",
+            "brightPurple": "#1298ff",
+            "brightCyan": "#98d028",
+            "brightWhite": "#58fbd6",
+            "background": "#001015",
+            "foreground": "#708090"
+        },
+        {
+            "name": "Shaman2",
+            "black": "#012026",
+            "red": "#b2302d",
+            "green": "#00a941",
+            "yellow": "#5e8baa",
+            "blue": "#449a86",
+            "purple": "#00599d",
+            "cyan": "#5d7e19",
+            "white": "#405555",
+            "brightBlack": "#384451",
+            "brightRed": "#ff4242",
+            "brightGreen": "#2aea5e",
+            "brightYellow": "#8ed4fd",
+            "brightBlue": "#61d5ba",
+            "brightPurple": "#1298ff",
+            "brightCyan": "#98d028",
+            "brightWhite": "#58fbd6",
+            "background": "#001015",
+            "foreground": "#405555"
+        },
+        {
+            "name": "Underwater",
+            "foreground": "#ddd",
+            "background": "#103639",
+            "cursorColor": "#d9ff00",
+            "selectionBackground": "#ff8800",
+            "black": "#222",
+            "red": "#e99550",
+            "green": "#49752a",
+            "yellow": "#e5c07b",
+            "blue": "#317f9f",
+            "purple": "#c678dd",
+            "cyan": "#56C6B2",
+            "white": "#DCDFE4",
+            "brightBlack": "#777",
+            "brightRed": "#f86b33",
+            "brightGreen": "#abd88b",
+            "brightYellow": "#d3ff59",
+            "brightBlue": "#61AFEF",
+            "brightPurple": "#C678DD",
+            "brightCyan": "#56B6C2",
+            "brightWhite": "#DCDFE4"
+        },
+        {
+            "name": "Wez",
+            "black": "#000000",
+            "red": "#cc5555",
+            "green": "#55cc55",
+            "yellow": "#cdcd55",
+            "blue": "#5555cc",
+            "purple": "#cc55cc",
+            "cyan": "#7acaca",
+            "white": "#cccccc",
+            "brightBlack": "#555555",
+            "brightRed": "#ff5555",
+            "brightGreen": "#55ff55",
+            "brightYellow": "#ffff55",
+            "brightBlue": "#5555ff",
+            "brightPurple": "#ff55ff",
+            "brightCyan": "#55ffff",
+            "brightWhite": "#ffffff",
+            "background": "#000000",
+            "foreground": "#b3b3b3"
+        }
+    ],
+    "keybindings":
+    [
+        { "command": {"action": "copy", "singleLine": false }, "keys": "ctrl+c" },
+        { "command": "paste", "keys": "ctrl+v" },
+        { "command": "find", "keys": "ctrl+shift+f" },
+    ]
+}
