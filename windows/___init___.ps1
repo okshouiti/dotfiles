@@ -2,7 +2,7 @@
 # ===============  Initiation Script  ===============
 # ===================================================
 # Open powershell with administrator privilege
-# Run 「& "~\OneDrive\asset\config\___init___.ps1"」
+# Run 「& "~\OneDrive\asset\dotfiles\___init___.ps1"」
 Set-ExecutionPolicy RemoteSigned
 
 
