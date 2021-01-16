@@ -93,4 +93,12 @@ Add-ContextMenu `
 
 
 
+# ===================================================
+# ================  Include scripts  ================
+# ===================================================
+# don't block executing profile.ps1
+Unblock-File -Path "$Env:OneDrive\ドキュメント\PowerShell\profile.ps1"
+
+
+
 Set-Location ~
