@@ -6,8 +6,8 @@ selection:
 
 window:
     dimensions:
-        columns: 114   # DPI
-        lines: 32
+        columns: 100   # DPI
+        lines: 28
     padding:
         x: 15   # in Pixel
         y: 5
@@ -21,18 +21,18 @@ window:
 
 font:
     normal:
-        family: Cica
+        family: 'HackGen35Nerd Console'
         style: Regular
     bold:
-        family: Cica
+        family: 'HackGen35Nerd Console'
         style: Bold
     size: 12
     offset:
         x: 0
-        y: 4
+        y: 2
     glyph_offset:
         x: 0
-        y: 0
+        y: 2
 
 cursor:
     style: Beam
