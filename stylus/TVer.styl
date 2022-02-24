@@ -1,0 +1,55 @@
+    // ----------  aaa  ----------
+    
+    // ヘッダー
+    #globalheader > .headinner
+        background var(--ok-bg-accent)
+    
+    // ©などのクレジット
+    .credit
+        display none
+    
+    // フッター
+    #globalfooter .f1,
+    #globalfooter .f2
+        background var(--ok-bg)
+    
+    
+    
+    
+    
+// ----------  番組一覧ページ  ----------
+    
+// 一覧ページ
+#container
+    background var(--ok-bg)
+    
+// 放送回番組概要
+.programlist ul li .progtitle h3 + p.summary
+    color var(--ok-color)
+    
+    
+    
+    
+    
+// ----------  動画ページ  ----------
+    
+// 動画エリア
+.video-section
+    background var(--ok-bg)
+    
+@media screen and (min-width 768px)
+    .video-section .inner,
+    .vod-section .inner
+        max-width 70%
+
+// これまでの放送
+section.vod-section
+    background var(--ok-bg-accent)
+
+// 出演者情報
+section.cast-section
+    background var(--ok-bg)
+
+// あなたにおすすめ
+section#recommend
+    background var(--ok-bg-accent)

@@ -1,0 +1,260 @@
+// ------------------------------  全体  ------------------------------
+
+// back ground color
+ytd-app,
+ytd-masthead
+    background var(--ok-bg)
+
+
+
+
+
+// ------------------------------  ヘッダー  ------------------------------
+
+// 固定ヘッダー
+#masthead
+    background var(--ok-bg-acrylic)
+    backdrop-filter var(--ok-bg-acrylic-filter)
+    box-shadow var(--ok-shadow-thin)
+
+// メニューアイコン
+#guide-icon.ytd-masthead
+    color #000
+
+// ロゴ
+#logo
+    filter grayscale(1) brightness(0.7)
+
+// 検索欄
+#container.ytd-searchbox
+    background var(--ok-input-bg-acrylic)
+
+// ヘッダー右側の通知などのボタン
+#voice-search-button.ytd-masthead .ytd-masthead[is-icon-button], 
+#buttons.ytd-masthead .ytd-masthead[is-icon-button]
+        color #000
+
+
+
+
+
+// ------------------------------  トップ画面左側ナビ  ------------------------------
+ytd-mini-guide-renderer.ytd-app
+    display none
+
+// 左側ナビ
+#contentContainer.tp-yt-app-drawer,
+#guide-inner-content
+    background none
+
+// ナビ本体
+#guide-wrapper
+    background transparent
+
+#guide-content.ytd-app
+    background var(--ok-bg-acrylic)
+    backdrop-filter var(--ok-bg-acrylic-filter)
+    box-shadow inset var(--ok-shadow-thin)
+
+.guide-icon.ytd-guide-entry-renderer,
+#guide-section-title.ytd-guide-section-renderer
+    color #000
+
+.title.ytd-guide-entry-renderer
+    color     #000
+    font-size   1em
+    font-weight bold
+
+ytd-guide-section-renderer:nth-child(3),
+#footer.ytd-guide-renderer
+    display none
+
+ytd-guide-entry-renderer[active]
+    background linear-gradient(90deg, #525a56, var(--ok-bg))
+
+
+
+// ------------------------------  メイン領域  ------------------------------
+
+#page-manager.ytd-app
+    overflow-x hidden
+
+// トップ画面ヘッダーカテゴリメニュー
+#chips-wrapper.ytd-feed-filter-chip-bar-renderer
+    position initial
+    background none
+    border none
+
+// カテゴリメニュー左右送りボタン
+#left-arrow-button.ytd-feed-filter-chip-bar-renderer,
+#right-arrow-button.ytd-feed-filter-chip-bar-renderer
+    background var(--ok-bg)
+
+// カテゴリメニュー左送りボタングラデーション
+#left-arrow.ytd-feed-filter-chip-bar-renderer:after,
+ytd-feed-filter-chip-bar-renderer[is-dark-theme] #left-arrow.ytd-feed-filter-chip-bar-renderer:after
+    background linear-gradient(to right, var(--ok-bg) 20%, rgba(0,0,0,0) 80%)
+
+// カテゴリメニュー右送りボタングラデーション
+#right-arrow.ytd-feed-filter-chip-bar-renderer:before,
+ytd-feed-filter-chip-bar-renderer[is-dark-theme] #right-arrow.ytd-feed-filter-chip-bar-renderer:before
+    background linear-gradient(to left, var(--ok-bg) 20%, rgba(0,0,0,0) 80%)
+
+
+
+
+
+// ------------------------------  チャンネル画面  ------------------------------
+
+.improvedtube-add-to-blacklist,
+tp-yt-paper-button.ytd-subscribe-button-renderer
+    background rgba(255,255,255,0.2) !important
+
+ytd-browse[page-subtype=channels]
+    background none
+
+// チャンネル名
+#channel-container.ytd-c4-tabbed-header-renderer,
+#tabs-container.ytd-c4-tabbed-header-renderer,
+#channel-container.ytd-c4-tabbed-header-renderer,
+#tabs-container.ytd-c4-tabbed-header-renderer
+    background none
+
+#channel-header.ytd-c4-tabbed-header-renderer,
+#tabs-inner-container.ytd-c4-tabbed-header-renderer
+    background rgba(0,0,0,0.2)
+    backdrop-filter var(--ok-bg-acrylic-filter)
+
+
+
+
+// ------------------------------  動画プレイヤー  ------------------------------
+
+#columns.ytd-watch-flexy
+    //margin-left 20vw
+
+
+
+
+
+// ------------------------------  動画情報  ------------------------------
+
+// 動画タイトル
+.title.ytd-video-primary-info-renderer
+    color #fff
+
+// 視聴数、投稿日、登録者数、概要欄の文字
+span.yt-view-count-renderer,
+#date.ytd-video-primary-info-renderer,
+#owner-sub-count.ytd-video-owner-renderer,
+.content.ytd-video-secondary-info-renderer
+    color #777
+
+yt-formatted-string[has-link-only_]:not([force-default-style]) a.yt-simple-endpoint.yt-formatted-string:visited
+    color #ccc
+
+#container.ytd-sentiment-bar-renderer
+    background none
+
+//  登録ボタン
+paper-button.ytd-subscribe-button-renderer
+    background-color #47546f
+
+ytd-toggle-button-renderer.style-text[is-icon-button],
+ytd-button-renderer.style-text[is-icon-button],
+ytd-button-renderer.style-default[is-icon-button],
+ytd-button-renderer.style-opacity[is-icon-button]
+    color #0b0b0b
+
+ytd-toggle-button-renderer.style-text[is-icon-button] #text.ytd-toggle-button-renderer,
+ytd-button-renderer.style-text[is-icon-button] #text.ytd-button-renderer,
+ytd-button-renderer.style-default[is-icon-button] #text.ytd-button-renderer,
+ytd-button-renderer.style-opacity[is-icon-button] #text.ytd-button-renderer,
+#button.ytd-menu-renderer yt-icon.ytd-menu-renderer
+    color #000
+
+a.yt-simple-endpoint.yt-formatted-string,
+a.yt-simple-endpoint.yt-formatted-string:visited
+    color #5288a3
+
+
+
+
+
+// ------------------------------  コメント  ------------------------------
+    
+// コメント投稿エリア
+ytd-comment-simplebox-renderer
+    display none
+
+// コメント主の名前、コメントについたいいねの数、コメントについた返信を開くボタン
+#author-text.yt-simple-endpoint.ytd-comment-renderer,
+// yt-formatted-string[has-link-only_]:not([force-default-style]) a.yt-simple-endpoint.yt-formatted-string,
+.more-button.ytd-comment-replies-renderer,
+.less-button.ytd-comment-replies-renderer,
+ytd-comment-action-buttons-renderer
+    color #111
+
+// コメント内容
+#content-text.ytd-comment-renderer
+    color #aaa
+
+// コメントのいいねボタン
+ytd-toggle-button-renderer#like-button,
+ytd-toggle-button-renderer#dislike-button
+    color #191919
+
+// コメント主画像と返信ボタン
+#author-thumbnail.ytd-comment-renderer,
+#reply-button-end
+    display none
+
+
+
+
+
+// ------------------------------  右側サイドナビ  ------------------------------
+
+// 関連動画のサムネイル
+#img
+    filter brightness(0.7) grayscale(0.8)
+
+// 「次の動画」を削除
+#upnext.ytd-compact-autoplay-renderer
+    display none
+
+// 自動再生
+#autoplay.ytd-compact-autoplay-renderer
+    color #58789f
+
+// 自動再生トグルボタン背景
+paper-toggle-button[checked]:not([disabled]) .toggle-bar.paper-toggle-button
+    background-color #555
+
+// 自動再生トグルボタン
+paper-toggle-button[checked]:not([disabled]) .toggle-button.paper-toggle-button
+    background-color #3f5e77
+
+// 関連動画タイトル
+h3.ytd-compact-video-renderer
+    color #a4a7ba
+
+// 関連動画のチャンネル名
+#channel-name.ytd-video-meta-block
+    color #444
+
+// 関連動画の再生回数と投稿日
+#metadata-line.ytd-video-meta-block
+    color #777
+
+// 訪問済み動画プログレスバーの背景
+ytd-thumbnail-overlay-resume-playback-renderer
+    background-color #4f5d60
+
+// 訪問済み動画プログレスバー
+#progress.ytd-thumbnail-overlay-resume-playback-renderer
+    background-color #58a4d7
+
+// 関連動画の再生時間
+ytd-thumbnail-overlay-time-status-renderer
+    color #aaa

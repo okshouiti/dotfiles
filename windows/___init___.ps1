@@ -67,6 +67,7 @@ if($machine_type -eq 1){
 # ===================================================
 . ".\pwsh\scoop.ps1"
 Install-Scoop
+Config-Scoop
 Install-ScoopPackages $machine_type
 
 

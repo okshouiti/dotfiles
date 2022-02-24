@@ -9,47 +9,56 @@
     "workbench.activityBar.visible": true,
     "workbench.sideBar.location": "right",
     "workbench.colorCustomizations": {
-        "titleBar.activeBackground": "#211f1e",
-        "titleBar.inactiveBackground": "#211f1e",
+        "titleBar.activeBackground": "#0a1018",
+        "titleBar.inactiveBackground": "#0a1018",
         "titleBar.activeForeground": "#666",
         "titleBar.inactiveForeground": "#666",
         "titleBar.border": "#0000",
-        "editorGroupHeader.tabsBackground": "#211f1e",
+        // タブバー
+        "editorGroupHeader.tabsBackground": "#0a1018",
         "editorGroupHeader.border": "#0000",
         // アクティブタブ
-        "tab.activeBackground": "#444",
+        "tab.activeBackground": "#192433",
         "tab.activeForeground": "#929290",
         // 非アクティブタブ
-        "tab.inactiveBackground": "#211f1e",
+        "tab.inactiveBackground": "#0a1018",
         "tab.inactiveForeground": "#555",
         // タブ間のボーダー
         "tab.border": "#1E1F29",
         "tab.activeBorder": "#e8a592",
         // Tab bottom border
-        "breadcrumb.background": "#211f1e",
+        // パンくずリスト
+        "breadcrumb.background": "#0a1018",
         "breadcrumb.foreground": "#777",
-        "editor.background": "#211f1e",
-        "editorLineNumber.activeForeground": "#e8a592",
-        "editorGutter.background": "#211f1e",
-        "activityBar.background": "#211f1e",
+        // エディター
+        "editor.background": "#0a1018",
+        // 行数
+        "editorLineNumber.foreground": "#333",
+        "editorLineNumber.activeForeground": "#db785d",
+        "editorGutter.background": "#0a1018",
+        // アクティビティバー
+        "activityBar.background": "#0a1018",
         "activityBar.foreground": "#666",
         "activityBar.border": "#0000",
         "activityBarBadge.background": "#e8a592",
-        "sideBar.background": "#191a23",
-        "statusBar.background": "#211f1e",
-        "statusBar.foreground": "#666",
+        // ステータスバー
+        "statusBar.background": "#0a1018",
+        "statusBar.foreground": "#444",
         "statusBar.border": "#0000",
         "statusBarItem.remoteBackground": "#0000",
         "statusBarItem.remoteForeground": "#999"
     },
-    "workbench.colorTheme": "βui - Zenburn",
-    "workbench.iconTheme": "minimalistic-icons",
+    "workbench.colorTheme": "Mayukai Mirage",
+    "workbench.iconTheme": "vscode-icons",
     "window.menuBarVisibility": "toggle",
     "window.title": "${activeEditorShort}",
     "window.titleBarStyle": "custom",
     "editor.fontFamily": "Cica, Consolas, 'Courier New', monospace",
     "editor.wordWrap": "on",
-    "editor.minimap.side": "left",
+    "editor.minimap.side": "right",
     "zenMode.fullScreen": false,
     "pasteImage.path": "${currentFileDir}\\img",
+    "julia.enableTelemetry": true,
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
 }

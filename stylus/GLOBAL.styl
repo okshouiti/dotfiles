@@ -1,0 +1,109 @@
+// ----------  Global  ----------
+a
+    color var(--ok-link-color)
+
+    &:visited
+        color var(--ok-link-color)
+
+    &:hover
+        background #c0c0b9
+        color var(--ok-bg)
+
+em
+    text-decoration underline double var(--ok-link-color)
+
+button
+    background var(--ok-btn-bg)
+    color var(--ok-btn-color)
+    border var(--ok-btn-border)
+
+// インラインコード
+code
+    color var(--ok-inline-code-color)
+    padding 0 .3rem
+    border-radius .4rem
+
+pre
+    code
+        color var(--ok-code-color)
+
+
+
+
+
+// ----- highlight.js -----
+/*
+.hljs
+    background #2b2b2b
+    color #bbb
+    font-family Cica
+    font-size 1rem
+
+.hljs-comment,
+.hljs-quote
+    color #515c51
+
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-link
+    color #4e4174
+
+.hljs-meta,
+.hljs-keyword
+    color #e8a592
+
+.hljs-built_in,
+.hljs-builtin-name
+    color #9989ea
+
+.hljs-number
+    color #a85959
+
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition
+    color #86ac37
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion
+    color #c7aa26
+*/
+
+
+
+
+// ----- Scroll Bar -----
+
+::-webkit-scrollbar
+    width 10px
+    height 10px
+
+/*
+::-webkit-scrollbar:hover,
+::-webkit-scrollbar-track:hover {
+    width: 1rem !important;
+}*/
+
+::-webkit-scrollbar,
+::-webkit-scrollbar-track
+    background var(--ok-bg)
+    border none
+
+::-webkit-scrollbar-thumb
+    background var(--ok-scroll-thumb)
+    border-radius 10px
+
+::-webkit-scrollbar-thumb:hover
+    background var(--ok-scroll-thumb-hover)
+    transform scale(1.5)
+
+::-webkit-scrollbar-button
+    display none !important

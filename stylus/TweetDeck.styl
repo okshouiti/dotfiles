@@ -1,0 +1,203 @@
+:root {
+    --tweetdeck-color: #7298bf;
+    --tweetdeck-link-color: #4b7893;
+    --tweetdeck-btn-bg: #4b72ae;
+    --tweetdeck-btn-color: #ccc
+}
+
+// 全体背景
+html.dark
+    body
+        background var(--ok-bg)
+
+    .app-columns-container,
+    .app-content
+        background none
+
+
+
+
+
+// ----------  サイドナビ  ----------
+
+html.dark
+    // サイドナビ背景
+    .app-header,
+    .app-navigator
+        background var(--ok-bg)
+
+    // ツイート＆検索ボタン
+    .app-header .Button.Button--primary,
+    .app-search-fake
+        background var(--tweetdeck-btn-bg)
+        border 1px solid #000
+        color var(--tweetdeck-btn-color)
+
+    // ツイート投稿エリア
+    .compose
+        background none
+    // 入力欄一帯
+    .compose-text-container
+        background #30353d
+    // 入力欄本体
+    .compose-text
+        color #fff
+    textarea.bg-color-twitter-white
+        background none !important
+
+    // 
+    .column-nav-item
+        background var(--ok-bg)
+
+    // サイドバーのアイテムの色
+    .column-nav-link,
+    .app-nav-link,
+    .app-nav-tab
+        color var(--tweetdeck-color)
+
+// 自分のアカウントのアイコン
+.nav-user-info > img
+    filter brightness(0.4)
+
+// tweetdeckロゴ
+.js-logo
+    display none
+
+
+
+
+
+// ----------  メインエリア  ----------
+
+// ----- カラム -----
+
+// カラム名の左余白
+.column-title
+    padding-left 3rem
+
+// 各カラム
+.column
+    margin-right 2rem
+    // 2番目のカラム
+    &:nth-of-type(2)
+        width 18rem
+
+html.dark
+    // カラム背景
+    .column,
+    .column-panel
+        background none
+
+    // カラムヘッダー
+    .column-header,
+    .column-header-temp
+        background #0001
+
+    // カラムヘッダーの設定ボタン
+    .column-header-link 
+        color var(--tweetdeck-color)
+
+    // カラムタイトル
+    .column-heading
+        color #aaa
+    .column-header-title .txt-mute
+        color #555
+
+
+
+
+
+// ----- ツイート -----
+html.dark
+    // ツイート全体
+    article
+        &.stream-item
+            background rgba(255,255,255,0.03)
+            margin-top 1rem
+        &.is-selected-tweet
+            background rgba(255,255,255,0.1)
+
+    // アイコン
+    .avatar 
+        filter brightness(0.5)
+
+    // 名前
+    .account-link
+        color #666
+
+    // 認証マーク
+    .sprite-verified-mini
+        filter brightness(0.5)
+
+    // ユーザーID
+    .txt-mute
+        color #555
+
+    // 本文
+    .tweet-text
+        color #d1e5f2
+
+    // リンク
+    a
+        color var(--tweetdeck-link-color)
+
+    // ツイート画像
+    .media-size-large,
+    .media-size-large-height
+        height 150px
+        filter brightness(0.4)
+
+    .media-image-container,
+    .media-image-container,
+    .js-media-preview-container
+        & > a
+            filter brightness(0.4)
+
+    // ツイートフッター
+    .js-show-this-thread > p
+        color #000
+
+
+
+
+
+// ----- 特殊ケース -----
+
+    // 普段は名前などを非表示
+    article.stream-item
+        header.tweet-header .account-inline,
+        .tweet-footer
+            filter opacity(0)
+
+    // マウスホバー時には表示
+    article.stream-item:hover
+        header.tweet-header .account-inline,
+        .tweet-footer
+            filter: none
+
+
+
+//  Special Case
+    .app-content
+        .tweet
+            .tweet-context
+                & ~ header,
+                & ~ footer
+                    display none
+
+                & ~ div
+                    .tweet-text
+                        color #777
+
+    // notification mark  i.e. favorite mark
+    .activity-header > .item-img
+        display none
+
+
+
+::-webkit-scrollbar
+    width 0 !important
+    height .8rem !important
+
+::-webkit-scrollbar-thumb
+    background #fff5 !important

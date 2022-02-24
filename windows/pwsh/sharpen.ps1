@@ -32,11 +32,6 @@ function Remove-UnnecessaryPackages(){
         "Microsoft.MicrosoftStickyNotes",   # Sticky Notes
         "*twitter*",                        # Twitter
         "Microsoft.Microsoft3DViewer",      # View 3D
-        "Microsoft.Xbox*",                  # Xbox
-        #"Microsoft.XboxGameOverlay",       # Xbox
-        #"Microsoft.XboxGamingOverlay",     # Xbox
-        #"Microsoft.XboxIdentityProvider",  # Xbox
-        #"Microsoft.XboxSpeechToTextOverlay",  # Xbox
         "Microsoft.MicrosoftOfficeHub",     # 新しいOffice を始めよう
         "Microsoft.WindowsAlarms",          # アラーム＆クロック
         "Microsoft.ZuneVideo",              # 映画 & テレビ

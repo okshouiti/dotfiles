@@ -19,24 +19,38 @@ function Set-CloudflareDns($machine_type){
 }
 
 function Set-FileShare($machine_type, $mail){
+	# SN850 (Main Drive)
     New-SmbShare `
         -Name "C" `
         -Path "C:\" `
         -ReadAccess $mail `
         -ConcurrentUserLimit 2 `
         -Description "C-drive"
+
+    # On non-laptop Config
     if($machine_type -eq 1){
+		# SN550
         New-SmbShare `
             -Name "Data SSD" `
-            -Path "E:\" `
-            -ReadAccess $mail `
-            -ConcurrentUserLimit 2 `
-            -Description "Data archive SSD"
-        New-SmbShare `
-            -Name "TEMP SSD" `
             -Path "D:\" `
-            -ChangeAccess $mail `
-            -ConcurrentUserLimit 2 `
+            -ReadAccess $mail `
+            -ConcurrentUserLimit 4 `
+            -Description "Data archive SSD"
+
+		# SN700
+		New-SmbShare `
+            -Name "Temp Working" `
+            -Path "X:\" `
+            -ReadAccess $mail `
+            -ConcurrentUserLimit 4 `
+            -Description "Temporary working SSD"
+
+		# A2000
+        New-SmbShare `
+            -Name "Temp Data" `
+            -Path "Z:\" `
+            -ReadAccess $mail `
+            -ConcurrentUserLimit 4 `
             -Description "Temporary working SSD"
     }
 }

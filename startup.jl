@@ -20,19 +20,48 @@ julia> cd(okdir("YTDL"))
 # ------------------------------------------------------------
 
 # filesystem utils
-extension(file; dot=true) = file[findlast('.', file)+Int(!dot) : end]
+#extension(file; dot=true) = isfile(file) ? file[findlast('.', file)+Int(!dot) : end] : ""
+extension(file; dot=true) = isfile(file) ? last(rsplit(file, '.', limit=2)) : ""
 okdir(dir...; root="github") = joinpath(ENV["ONEDRIVE"], root, dir...)
 okdotfiles(path...) = okdir("dotfiles", path...; root="asset")
 
 # TOML database
-function readtoml(name)
-    file = joinpath(okdir("database"; root="asset"), name)
-    isfile(file) || return error("TOML file $name isn't exist.")
-    TOML.parsefile(file)
+# kdb(filename::AbstractString) = okdb(:READ, filename)
+macro okdb_str(cmds)
+    sub_cmds = split(cmds, ' ', limit=2) |> last
+    dir = okdir("database"; root="asset")
+    if startswith(cmds, "show ")
+        filter(readdir(dir)) do item
+            println(item)
+            isfile(item) && extension(item, dot=false) == sub_cmds
+        end .|> println
+        return nothing
+    elseif startswith(cmds, "read ")
+        _okdb_read(joinpath(dir, sub_cmds))
+    elseif startswith(cmds, "search ")
+        filename, key = rsplit(sub_cmds, ' ', limit=2)
+        _okdb_search(joinpath(dir, filename), key)
+    else
+        error("Invalid commands!")
+    end
 end
 
+_okdb_read(file) = TOML.parsefile(file)
+_okdb_search(file, key) = filter(_okdb_read(file)) do (dbkey, v)
+    occursin(key, dbkey)
+end
+#_okdb_search(file, key) = filter( pair->occursin(key, pair.first), _okdb_read(file) )
+#=function _okdb_search(file, key)
+    filter(_okdb_read(file)) do (k, v)
+        occursin(string(key), k)
+    end
+end=#
+
+#_okdb_search(file, key) = filter( (k,v)->occursin(string(key), k), _okdb_read(file) )
+
+
 # system utils
-iswsl() = haskey(ENV, "WSLENV")
+iswsl() = get(ENV, "WSL_DISTRO_NAME", "") != ""
 isalpine() = get(ENV, "WSL_DISTRO_NAME", "") == "Alpine"
 
 # math utils
@@ -60,9 +89,9 @@ end
 atreplinit() do repl
     # import packages
     try
-        @eval using OhMyREPL
+        @eval using OhMyREPL, TOML
     catch e
-        @warn "OhMyREPL インポートエラー" e
+        @warn "インポートエラー" e
     end
 
     # add EnvDict

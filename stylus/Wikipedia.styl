@@ -1,0 +1,86 @@
+//@charset "UTF-8";
+
+body
+    background var(--ok-bg)
+
+
+
+
+
+// ヘッダー
+#mw-page-base
+    background var(--ok-bg)
+
+// 個人アカウントエリア
+#p-personal
+    display none
+
+// hide page-note toggle button
+#left-navigation
+    display none
+
+// 検索欄以外を削除
+#right-navigation > *
+    display none
+#right-navigation > #p-search
+    display block
+
+
+
+
+
+// ---------------  Side Bar  ---------------
+
+// 言語選択以外のアイテムをサイドバーから削除
+#mw-panel > *
+    display: none
+
+nav#p-lang
+    display: block
+
+
+
+
+
+// ---------------  Main Area  ---------------
+
+#content
+    background var(--ok-bg)
+    color var(--ok-color)
+    border none
+
+// 目次および引用ブロック
+.toc,
+.toccolours
+    background #fff1
+    border none !important
+.tocnumber
+    color var(--ok-color)
+
+// 要点（ページ右側）
+.infobox
+    background #fff1
+    color #ccc
+    border none
+
+// 見出し２の間隔
+.mw-body-content
+    h2
+        margin-top 4rem
+
+
+
+
+
+// ---------------  Content  ---------------
+
+// 他言語ページのみ存在するリンク
+a.new
+    color #815f53
+    text-decoration underline dotted
+
+// ページのカテゴリ
+#catlinks
+    background #fff1
+    border none
+
