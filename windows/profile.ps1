@@ -4,7 +4,7 @@
 
 # 定数定義
 Set-Variable -Name DOTFILE_DIR `
-    -Value "$HOME\OneDrive\asset\dotfiles" `
+    -Value "$HOME\OneDrive\repo\dotfiles" `
     -Option Constant `
     -Scope Global `
     -Description "設定ファイルが置いてあるディレクトリパス"
@@ -14,7 +14,7 @@ Set-Variable -Name ENCODER_DIR `
     -Scope Global `
     -Description "エンコーダのバイナリが置いてあるディレクトリパス"
 
-#$config_dir = "$HOME\OneDrive\asset\dotfiles"
+#$config_dir = "$HOME\OneDrive\repo\dotfiles"
 #$encoder_dir = "$HOME\OneDrive\asset\encoder"
 
 # ウィンドウタイトル変更
@@ -23,7 +23,7 @@ Set-Variable -Name ENCODER_DIR `
 
 
 function Invoke-AddiotionalProfile() {
-    $profile_xxx = "$HOME\OneDrive\asset\dotfiles-xxx\powershell\profile.ps1"
+    $profile_xxx = "$HOME\OneDrive\repo\dotfiles-xxx\powershell\profile.ps1"
     . $profile_xxx
 }
 
