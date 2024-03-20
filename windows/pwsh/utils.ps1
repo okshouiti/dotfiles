@@ -1,4 +1,4 @@
-﻿function Input-MachineType {
+﻿function Read-MachineType {
     $type = (Read-Host "Choose Number of MachineType - [1]Desktop [2]Laptop")
     if($type -eq 1 -or $type -eq 2){
         return $type

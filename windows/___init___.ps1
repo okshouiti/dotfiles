@@ -18,7 +18,7 @@ Set-Location $PSScriptRoot
 
 
 
-$machine_type = Input-MachineType
+$machine_type = Read-MachineType
 $mail = (Read-Host "Write mail address of this machine's admin")
 
 
@@ -43,10 +43,8 @@ Set-FileShare $machine_type $mail
 # ===================================================
 # ============  Enable Windows Feature  =============
 # ===================================================
-# enable VitualMachine for WSL
-dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-# enable WSL
-dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+# enable WSL2
+& wsl --install
 
 
 
@@ -93,10 +91,42 @@ Add-ContextMenu `
     "ここでPNGをHEICに変換"
 
 
+# CaddyなどGo製のweb系ツールの一部はレジストリからMIMEを決定する。
+# 何らかの原因でjsがtext/plainになっていた場合、serveした.jsをwebアプリが実行できない問題。
+# https://github.com/golang/go/issues/32350
+Set-ItemProperty `
+    -LiteralPath "Registry::HKCR\.js" `
+    -Name "Content Type" `
+    -Value "text/javascript"
+Set-ItemProperty `
+    -LiteralPath "Registry::HKEY_CURRENT_USER\Software\Classes\.js" `
+    -Name "Content Type" `
+    -Value "text/javascript"
 
-# ===================================================
-# ================  Include scripts  ================
-# ===================================================
+# ExplorerのSilentCleanupからサムネイル削除処理を外す（勝手に消されないため）
+Set-ItemProperty `
+    -LiteralPath "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Thumbnail Cache" `
+    -Name "Autorun" `
+    -Value "0"
+
+
+
+
+
+
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@   Include scripts   @@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# ホームディレクトリ整理 https://zenn.dev/tantan_tanuki/articles/90e8d996f6b12a
+$new_java_dir = Join-Path -Path $HOME -ChildPath ".jvmuserhome"
+$current_jvm_env = [Environment]::GetEnvironmentVariable("JAVA_TOOL_OPTIONS", "USER")
+[Environment]::SetEnvironmentVariable("JAVA_TOOL_OPTIONS", "${current_jvm_env} -Duser.home=${new_java_dir}", "USER")
+
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@   After Init   @@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 # don't block executing profile.ps1
 Unblock-File -Path "$Env:OneDrive\ドキュメント\PowerShell\profile.ps1"
 

@@ -1,4 +1,6 @@
-﻿# `~\OneDrive\ドキュメント\PowerShell\profile.ps1` includes this file
+﻿#Requires -Version 7.0
+
+# `~\OneDrive\ドキュメント\PowerShell\profile.ps1` includes this file
 
 # Yarnで入れたcliツールが置いてあるディレクトリにパスを通す
 $ENV:Path += ";$(yarn global bin)"
@@ -21,6 +23,12 @@ Set-Variable -Name ENCODER_DIR `
 # ウィンドウタイトル変更
 (Get-Host).UI.RawUI.WindowTitle = "PS Core"
 
+
+
+function Invoke-AddiotionalProfile() {
+    $profile_xxx = "$HOME\OneDrive\asset\dotfiles-xxx\powershell\profile.ps1"
+    . $profile_xxx
+}
 
 
 
@@ -88,6 +96,36 @@ function Rename-Sort {
     }
 }
 
+function Rename-FileName() {
+    param (
+		[string]     $Filter = "*"
+		, [string[]] $From   = @()
+        , [string[]] $To     = @("")
+        , [switch]   $Exec   = $False
+	)
+    
+    $files = (Get-ChildItem -Filter $Filter)
+
+    foreach ($file in $files) {
+        $replace = $file.BaseName
+
+        for ($i = 0; $i -lt $from.Length; $i++) {
+            $t = $to[0]
+            if ($to.Length -eq 1){$t = $to[$i]}
+            $replace = $replace -replace $from[$i],$t
+        }
+
+        $replace = $replace.Trim()
+
+        if (!$Exec) {
+            $original = $file.BaseName
+            Write-Host "$replace■■■$original"
+        } else {
+            Rename-Item -Path $file.FullName -NewName ($replace + $file.Extension)
+        }
+    }
+}
+
 
 
 
@@ -96,51 +134,50 @@ function Rename-Sort {
 # =================  マルチメディア  =================
 # ====================================================
 
-# youtube-dl
-function Get-YtVideo() {
+#
+function Get-Video() {
     param (
-        [Parameter(Mandatory)]
-        [string] $Url
-        , [string] $Format = "251"
+        [string] $Url = "",
+        [switch] $AudioOnly,
+        [string] $BatchFile = ""
 	)
 
-    $opus_cd = "251"
-
-    $opts = @(
-        "youtube-dl"
-        "-o"
-            "${home}\Desktop\""%(title)s.%(ext)s"""
-        "-f"
-            $Format
+    $options = @(
+        "yt-dlp"
+        "--embed-metadata"
+        "--embed-subs"
+        "--sub-langs"
+            "ja,en"
+        "--embed-chapters"
+        "--embed-thumbnail"
+        "--no-mtime"
+        "--output"
+            "'【%(uploader)s】　%(title)s.%(ext)s'"
     )
-    if ($Format -eq $opus_cd) {
-        $opts += @(
+
+    if ($AudioOnly) {
+        $options += @(
+            "--format"
+                "bestaudio"
             "--extract-audio"
-            "--audio-format"
-                "opus"
+        )
+    }
+
+    if ($BatchFile.Length -ne 0) {
+        $options += @(
+            "--batch-file"
+                $BatchFile
         )
     } else {
-        $opts += "--merge-output-format"
-        $opts += "mkv"
+        $options += $Url
     }
-    
-    $opts += @(
-        "--no-mtime"
-        "--console-title"
-        "--add-metadata"
-        "--external-downloader",
-            "aria2c",
-        #"--external-downloader-args",
-        #    "-x 16 -s 16 -k 1M" #--download-result=hide
-        $Url
-    )
-    $cmds = ($opts -join " ")
+
+    $cmds = ($options -join " ")
     Write-Host $cmds
     Invoke-Expression $cmds
-    # & youtube-dl `
-    #     -i
+
+    Write-Output "`a"
 }
-Set-Alias ytdl Get-YtVideo
 
 # png→webp変換
 function ConvertTo-Webp() {
@@ -169,17 +206,28 @@ Set-Alias heic ConvertTo-Heic
 # オプション → https://github.com/link-u/cavif/blob/master/doc/ja_JP/usage.md
 function ConvertTo-Avif() {
     $files = Get-ChildItem -File -Filter *.png
+    $files += Get-ChildItem -File -Filter *.jpg
     foreach ($f in $files) {
         $src = $f.Name
         $dst = $f.BaseName + ".avif"
-        & "$ENCODER_DIR\cavif.exe" -i $src -o $dst `
-            --profile 1 `
-            --pix-fmt "yuv444" `
-            --bit-depth 8 `
-            --encoder-usage "good" `
-            --rate-control "q" `
-            --crf 20 `
-            --threads 12
+        & avifenc `
+            --speed 4 `
+            --jobs 10 `
+            --min 20 `
+            --max 63 `
+            --codec aom `
+            --advanced end-usage=q `
+            --advanced cq-level=30 `
+            $src `
+            $dst
+        # & "$ENCODER_DIR\cavif.exe" -i $src -o $dst `
+        #     --profile 1 `
+        #     --pix-fmt "yuv444" `
+        #     --bit-depth 8 `
+        #     --encoder-usage "good" `
+        #     --rate-control "q" `
+        #     --crf 20 `
+        #     --threads 12
     }
 }
 Set-Alias avif ConvertTo-Avif
@@ -201,7 +249,10 @@ Set-Alias realsr ConvertTo-HiRes
 
 
 # 指定秒ごとにフレームを画像として抜き出し(エンコーダ主観画質評価用)
-function Extract_Frames($rate = "10") {
+function Get-Frames() {
+    param (
+        [int] $Rate = 10
+    )
     $targets = @(".mp4", ".mkv", ".webm")
     $files = Get-ChildItem -File | Where-Object {$_.Extension -in $targets}
     $dest_dir = Join-Path -Path $files[0].DirectoryName -ChildPath "frames"
@@ -257,4 +308,74 @@ function Write-FrameNumber() {
             -an `
             (Join-Path $file_dir "${file_name}---frames.mp4")
     }
+}
+
+# 元動画から指定区間を無劣化で切り出す
+function Get-VideoScene() {
+	param (
+        [Parameter(Mandatory)]
+		[string] $File
+		, [string] $Begin = "00:00:10"
+		, [string] $End = "00:00:20"
+	)
+
+    $seconds_begin = 0
+    $seconds_end = 0
+    
+    $arr_begin = $Begin.Split(":")
+    $arr_end = $End.Split(":")
+
+    $coef = @(3600, 60, 1)
+
+    for ($i = 0; $i -lt 3; $i++) {
+        $seconds_begin += $coef[$i] * [int]::Parse($arr_begin[$i])
+        $seconds_end += $coef[$i] * [int]::Parse($arr_end[$i])
+    }
+
+    $diff = $seconds_end - $seconds_begin
+
+    $hour   = ([math]::Floor($diff / 3600)).toString().PadLeft(2, "0")
+    $minute = ([math]::Floor(($diff % 3600) / 60)).toString().PadLeft(2, "0")
+    $second = ($diff % 60).toString().PadLeft(2, "0")
+
+    $diff_ts = $hour + ":" + $minute + ":" + $second
+
+    $file_obj = Get-Item -Path $File
+    $filename = $file_obj.Name
+    $filedir = $file_obj.DirectoryName
+
+    Write-Host ("-to: " + $diff_ts )
+
+    & ffmpeg `
+        -ss $Begin `
+        -i $File `
+        -to $diff_ts `
+        -codec copy `
+        "${filedir}\cut___${filename}"
+}
+
+
+
+
+
+# ====================================================
+# =================  開発補助  =================
+# ====================================================
+function Convert-GraalNative() {
+    param (
+        [Parameter(Mandatory)]
+		[string] $JarFile
+        , [string] $ExeName = "mybin.exe"
+	)
+    $graal_gu = "$ENV:GRAALVM_HOME\bin\gu.cmd"
+
+    if (-not (Test-Path $graal_gu)) {
+        & $graal_gu install native-image
+    }
+
+    $native_image_exe = "$ENV:GRAALVM_HOME\bin\native-image.cmd"
+    $vscode_envvars_bat = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
+
+    $cmd_commands = "call `"$vscode_envvars_bat`" & call $native_image_exe --no-fallback -jar $JarFile $ExeName & exit"
+    & cmd /k $cmd_commands
 }
