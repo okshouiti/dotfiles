@@ -2,9 +2,6 @@
 
 # `~\OneDrive\ドキュメント\PowerShell\profile.ps1` includes this file
 
-# Yarnで入れたcliツールが置いてあるディレクトリにパスを通す
-$ENV:Path += ";$(yarn global bin)"
-
 # 定数定義
 Set-Variable -Name DOTFILE_DIR `
     -Value "$HOME\OneDrive\asset\dotfiles" `
