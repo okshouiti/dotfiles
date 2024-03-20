@@ -1,0 +1,134 @@
+body {
+    background: var(--ok-bg)
+}
+
+/*  */
+.header-wrap,
+.set-header--fixed .tileview--grid .metabar--fixed,
+.tileview--grid .metabar--fixed.is-stuck {
+    backdrop-filter: blur(10px);
+    box-shadow: #000 0 0 0.5rem 0;
+    border: none
+}
+
+/* ヘッダー */
+.header-wrap {
+    background: rgb(50, 50, 50, .5)
+}
+/* ヘッダー下メニュー */
+.set-header--fixed .tileview--grid .metabar--fixed,
+.tileview--grid .metabar--fixed.is-stuck {
+    background: rgb(0, 0, 0, .4)
+}
+
+.search--home,
+.search--header {
+    background: rgb(200, 200, 200, .2);
+}
+
+
+
+.site-wrapper {
+    background: var(--ok-bg)
+}
+
+
+
+
+
+.is-not-mobile-device body {
+    min-width: unset
+}
+
+
+
+
+
+/* result page wrapper */
+.results--main {
+    max-width: 45rem
+}
+
+/* search menu */
+.search-filters-wrap::before,
+.search-filters-wrap::after {
+    display:none
+}
+
+
+/* 検索結果概要（wikiの情報など） */
+.module:not(.module--carousel):not(.module--placeholder):not(.module--images) {
+    background: #6666
+}
+.module__toggle {
+    background: none
+}
+.module__toggle--more::after {
+    background: linear-gradient(#0000, #333)
+}
+
+/* 検索結果概要タイトル */
+.module__title__link,
+.module__title__link:hover,
+.module__title__link:active,
+.module__title__link:visited {
+    color: var(--ok-link-color)
+}
+/* 検索結果概要URL */
+.module__more-at, .module__more-at:hover, .module__official-url, .module__official-url:hover {
+    color: #78a0bf
+}
+/* 検索結果概要本文 */
+.module__text {
+    color: var(--ok-color)
+}
+
+
+
+
+
+/* 検索結果セクション */
+.result:not(.result--ad).highlight {
+    background: #fff1 !important
+}
+
+/* ページタイトル */
+.result a.result__a {
+    color: var(--ok-link-color)
+}
+.result a.result__a:visited {
+    color: #657165;
+}
+.highlight .result__a,
+.result__a:hover, .result__a:visited:hover {
+    color: #b4ffba !important;
+}
+
+/* 記事中に現れる検索ワード */
+.result__snippet b {
+    font-weight: bolder;
+    color: #ae867a !important;
+}
+
+
+
+
+
+/* 画面右下フィードバックボタン */
+.feedback-btn {
+    display: none
+}
+
+
+
+
+
+/* 画像検索背景 */
+.zci-wrap,
+.zci--type--tiles:not(.is-fallback).is-full-page.is-expanded {
+    background: none
+}
+/* 画像検索記事名 */
+.tile--img__sub, .tile--img__sub:hover {
+    color: var(--ok-link-color);
+}

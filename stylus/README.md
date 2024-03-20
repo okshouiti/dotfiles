@@ -4,7 +4,7 @@
 
 （CSSプリプロセッサに同名の[Stylus](https://stylus-lang.com)を使っているためややこしいぞ）
 
-`npm install -g stylus`実行済を前提として、
+`pnpm add -g stylus`実行済を前提として、
 
 1. VSCodeで.stylファイルを作成or編集
 1. VSCodeファイルエクスプローラでこのreadmeを含むディレクトリを右クリックし、「Open in Integrated Terminal」
