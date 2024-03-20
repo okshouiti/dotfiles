@@ -69,7 +69,7 @@ isalpine() = get(ENV, "WSL_DISTRO_NAME", "") == "Alpine"
 ⪆(x::AbstractFloat, y::AbstractFloat) = x>y || x≈y # \gtrapprox <tab>
 
 # Franklin utils
-function okserve(name="JCS"; kwargs...)
+function okserve(name="memo"; kwargs...)
     dir = okdir(name)
     if isdir(dir)
         cd(dir) do
@@ -83,13 +83,57 @@ end
 
 
 
+# Convert hex-string to binary file
+function bin2hex(infile::AbstractString, outfile::AbstractString)
+    bytes = read(infile)
+    open(outfile, "w") do io
+        write(io, bytes2hex(bytes))
+    end
+end
+
+# Convert binary file to hex-string
+function hex2bin(
+        infile::AbstractString = joinpath(homedir(), "Desktop", "ctxt.txt"),
+        outfile::AbstractString = joinpath(homedir(), "Desktop", "bybin.7z"))
+    
+    rawstr = read(infile, String)
+    str = replace(rawstr, '\n'=>"")
+    open(outfile, "w") do io
+        write(io, hex2bytes(str))
+    end
+end
+
+
+
+function ok_rand()
+    rands = rand(collect(0:7), 3)
+    digits2num = [rands[i]*10^(i-1) for i ∈ eachindex(rands)]
+    ok_rand_show(sum(digits2num))
+end
+
+function ok_rand_show(input::Int)
+    nums = map(split(lpad(string(input), 3, "0"), "")) do c
+        parse(Int, c, base=10)
+    end
+    println(join(nums))
+
+    for i ∈ nums
+        bins = digits(i, base=2, pad=3)
+        println(join(reverse(bins)))
+    end
+end
+
+
+
+
+
 # ------------------------------------------------------------
 # -------------------   REPL Initiation   --------------------
 # ------------------------------------------------------------
 atreplinit() do repl
     # import packages
     try
-        @eval using OhMyREPL, TOML
+        @eval using OhMyREPL, Random
     catch e
         @warn "インポートエラー" e
     end
@@ -100,8 +144,8 @@ atreplinit() do repl
         "ONEDRIVE" => joinpath(home, "OneDrive"),
         "STARTUP"  => joinpath(okdotfiles("startup.jl")),
         "YTDL_DIR" => joinpath(home, "Desktop"),
-        "PYTHON3"  => Sys.which("python3"),
-        "PIP3"     => @static Sys.iswindows() ? Sys.which("pip") : Sys.which("pip3")
+        #"PYTHON3"  => Sys.which("python3"),
+        #"PIP3"     => @static Sys.iswindows() ? Sys.which("pip") : Sys.which("pip3")
     ))
 
     printstyled("●読込成功", color=:light_cyan)
