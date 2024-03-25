@@ -4,11 +4,27 @@
         return $type
     } else {
         Write-Output "Enter number 1 or 2"
-        return Get-MachineType
+        return Read-MachineType
     }
 }
 
-
+function Read-UserMailAddress {
+    $mail = Get-WmiObject -Class Win32_ComputerSystem `
+            | Select-Object -First 1 -Property PrimaryOwnerName `
+            | ForEach-Object { $_.PrimaryOwnerName } `
+            | Where-Object { $_ -match "[a-z]+@[a-z].+\.[a-z]" }
+    if ($mail) {
+        return $mail
+    }
+    # システム情報からメアド形式で取得できなかった場合
+    $mail = (Read-Host "Write mail address of this machine's admin")
+    if($mail -match "[a-z]+@[a-z].+\.[a-z]"){
+        return $mail
+    } else {
+        Write-Output "Enter number 1 or 2"
+        return Read-UserMailAddress
+    }
+}
 
 # --------------------------------------------------------------------------------
 # ------------------------------  Add Context Menu  ------------------------------

@@ -19,7 +19,7 @@ Set-Location $PSScriptRoot
 
 
 $machine_type = Read-MachineType
-$mail = (Read-Host "Write mail address of this machine's admin")
+$mail = Read-UserMailAddress
 
 
 
