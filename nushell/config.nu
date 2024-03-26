@@ -840,7 +840,13 @@ $env.config = {
     ]
 }
 
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@  Custom Command  @@@@@@@@@@@@@@@@@@@@@@@@@
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 def ok [] {}
+
+# Random octal
 def "ok rand" [] {
     # ランダムに0から7までの値を3桁生成
     let digits = [1 2 3] | each { random int 0..7 }
@@ -853,4 +859,40 @@ def "ok rand" [] {
 
     # 2進数の桁を1なら●、0なら○で表示
     $bits | each { split chars | each {|b| if $b == '1' { '●' } else { '○' }} | str join } | str join " " | echo $in
+}
+
+# youtube-dl
+def "ok ytdl" [
+  url?: string
+  --audioonly
+  --batchfile: string
+] {
+    mut $options = [
+        "--embed-metadata"
+        "--embed-subs"
+        "--sub-langs"
+            "ja,en"
+        "--embed-chapters"
+        "--embed-thumbnail"
+        "--no-mtime"
+        "--output"
+            "'【%(uploader)s】　%(title)s.%(ext)s'"
+    ]
+
+    if $audioonly {
+        $options = ($options | append ["--format" "bestaudio" "--extract-audio"])
+    }
+
+    if $batchfile != null {
+        $options = ($options | append ["--batch-file" $batchfile])
+    } else if $url != null {
+        $options = ($options | append $url)
+    } else {
+        return
+    }
+
+    let $cmd = $options | str join ' '
+    echo $cmd
+
+    ^yt-dlp ...$options
 }
