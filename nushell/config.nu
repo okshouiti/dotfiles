@@ -852,7 +852,7 @@ def "ok rand" [] {
     let digits = [1 2 3] | each { random int 0..7 }
 
     # 生成した3桁の値を表示
-    echo $"--- ($digits | str join) ---"
+    print $"--- ($digits | str join) ---"
 
     # # 各桁を2進数3桁に変換し
     let bits = $digits | each { into bits | into string | str reverse | str substring 0..3 | str reverse }
