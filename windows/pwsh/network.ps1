@@ -14,11 +14,16 @@ function Set-CloudflareDns($machine_type){
 }
 
 function Set-FileShare($machine_type, $mail){
-	# SN850 (Main Drive)
     New-SmbShare `
         -Name "Desktop" `
         -Path (Join-Path -Path $HOME -ChildPath "Desktop") `
         -ReadAccess $mail `
         -ConcurrentUserLimit 2 `
         -Description "Desktop"
+    New-SmbShare `
+    -Name "OneDrive" `
+    -Path (Join-Path -Path $HOME -ChildPath "OneDrive") `
+    -ReadAccess $mail `
+    -ConcurrentUserLimit 2 `
+    -Description "OneDrive"
 }
