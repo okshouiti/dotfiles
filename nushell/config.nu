@@ -861,7 +861,7 @@ def "ok rand" [] {
     $bits | each { split chars | each {|b| if $b == '1' { '●' } else { '○' }} | str join } | str join " " | echo $in
 }
 
-# youtube-dl
+# yt-dlp
 def "ok ytdl" [
   url?: string
   --audioonly
