@@ -896,3 +896,29 @@ def "ok ytdl" [
 
     ^yt-dlp ...$options
 }
+
+# sort and rename
+def "ok rename" [
+  url?: string
+  --execute
+  --basename: string
+] {
+    let $files = ls | sort-by name --natural
+
+    let $range = 0..($files | length | $in - 1)
+    let $digits = $files | length | into string | str length
+    for $it in $range {
+        let $target = $files | get $it | get name
+
+        let $count =  $it + 1 | fill --alignment right --character '0' --width $digits
+
+        mut $result = if $basename != null {$basename + " " + $count} else {$count}
+        $result += "."
+        $result += ($target | split row "." | reverse | get 0)
+
+        if $execute {
+            mv $target $result
+        }
+        print ($target + " → " + $result)
+    }
+}
