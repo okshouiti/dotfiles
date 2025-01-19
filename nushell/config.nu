@@ -866,7 +866,6 @@ $env.config = {
     ]
 }
 
-
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 #@@@@@@@@@@@@@@@@@@@@@@@@@  Custom Command  @@@@@@@@@@@@@@@@@@@@@@@@@
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -881,7 +880,7 @@ def "ok rand" [] {
     print $"--- ($digits | str join) ---"
 
     # # 各桁を2進数3桁に変換し
-    let bits = $digits | each { into bits | into string | str reverse | str substring 0..3 | str reverse }
+    let bits = $digits | each { into bits | into string | str reverse | str substring 0..2 | str reverse }
 
     # 2進数の桁を1なら●、0なら○で表示
     $bits | each { split chars | each {|b| if $b == '1' { '●' } else { '○' }} | str join } | str join " " | echo $in
@@ -891,9 +890,15 @@ def "ok rand" [] {
 def "ok ytdl" [
   url?: string
   --audioonly
+  --limit_fhd
   --batchfile: string
+  --cookies: string
 ] {
+    use std
+
     mut $options = [
+        "--format-sort"
+            "res,vcodec:vp9"
         "--embed-metadata"
         "--embed-subs"
         "--sub-langs"
@@ -902,11 +907,26 @@ def "ok ytdl" [
         "--embed-thumbnail"
         "--no-mtime"
         "--output"
-            "'【%(uploader)s】　%(title)s.%(ext)s'"
+            "【%(uploader)s】　%(title)s.%(ext)s"
     ]
+
+    # Youtubeではav1よりvp9を優先
+    if ($url | str contains "www.youtube.com") {
+        std log info "Site: Youtube"
+        $options = ($options | append ["--format-sort" "res,vcodec:vp9"])
+    } else {
+        std log info "Site: Not Youtube"
+    }
 
     if $audioonly {
         $options = ($options | append ["--format" "bestaudio" "--extract-audio"])
+    } else if $limit_fhd {
+        $options = ($options | append ["--format" "bv[height<=1080]+ba"])
+    }
+
+    # ログイン状態でのみ落とせる動画用にクッキー設定
+    if $cookies != null {
+        $options = ($options | append ["--cookies" $cookies])
     }
 
     if $batchfile != null {
@@ -918,7 +938,7 @@ def "ok ytdl" [
     }
 
     let $cmd = $options | str join ' '
-    echo $cmd
+    std log info $cmd
 
     ^yt-dlp ...$options
 }
