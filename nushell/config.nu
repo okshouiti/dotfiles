@@ -107,3 +107,22 @@ def "ok rename" [
         print ($target + " → " + $result)
     }
 }
+
+# sort and rename
+def "ok video2webp" [
+  --fps: int = 30
+  --quality: int = 80
+] {
+    use std
+
+    let $files = ls ...(glob *.{mp4,mkv,webm})
+
+    let $range = 0..($files | length | $in - 1)
+    for $it in $range {
+        let $target: string = $files | get $it | get name | str replace -r '^(.+)\\' ''
+        let $out_name = $target | str replace -r '(.+).(mp4|mkv|webm)' '$1.webp'
+        std log info $"($target) → ($out_name)"
+
+        ^ffmpeg -i $target -vcodec libwebp -lossless 0 -loop 0 -preset default -an -vsync 0 -filter:v fps=($fps) -compression_level 6 -quality ($quality) $out_name
+    }
+}
