@@ -68,19 +68,6 @@ Import-Module Get-ChildItemColor
 # Install-Module -Name Terminal-Icons -Repository PSGallery
 Import-Module -Name Terminal-Icons
 
-# zoxide - cdコマンド代替
-Invoke-Expression (& {
-    $hook = if ($PSVersionTable.PSVersion.Major -lt 6) { 'prompt' } else { 'pwd' }
-    (zoxide init --hook $hook powershell) -join "`n"
-})
-
-
-# bat - ハイライト付きcat
-function b($file) {
-    & bat --theme=TwoDark $file
-}
-
-
 function Rename-Sort {
     $items = Get-ChildItem -File | Sort-Object {<#[int]#>$_.Basename}
     $digits = ($items.Length -split '').Count - 2
