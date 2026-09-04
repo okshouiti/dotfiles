@@ -21,6 +21,8 @@ def "ok ytdl" [
     use std
 
     mut $options = [
+        "--js-runtimes"
+            "bun"
         "--format-sort"
             "res,vcodec:vp9"
         "--embed-metadata"
@@ -30,8 +32,10 @@ def "ok ytdl" [
         "--embed-chapters"
         "--embed-thumbnail"
         "--no-mtime"
+        "--retry-sleep"
+            "fragment:exp=5:20"
         "--output"
-            "【%(uploader)s】　%(title)s.%(ext)s"
+            "【%(uploader)s】　%(title)s　%(id)s.%(ext)s"
     ]
 
     # Youtubeではav1よりvp9を優先
