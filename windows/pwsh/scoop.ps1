@@ -1,12 +1,12 @@
-﻿
-function Install-Scoop(){
-    iwr -useb get.scoop.sh | iex
+﻿function Install-Scoop(){
+    Invoke-WebRequest -useb get.scoop.sh | Invoke-Expression
 }
 
 
 
 function Config-Scoop(){
     $ scoop config aria2-warning-enabled false
+    $ scoop config cache_clean_after_install true
 }
 
 
@@ -14,11 +14,11 @@ function Config-Scoop(){
 function Install-ScoopPackages($machine_type){
     # Add cli-apps
     & scoop install git
-    & scoop install 7zip aria2 bat bottom broot deno duf fd ffmpeg flac gsudo imagemagick julia less libwebp macchina mediainfo neovim nodejs-lts nu opus-tools pwsh qaac rclone scoop-search tre-command ugrep x265 yarn youtube-dl zoxide
+    & scoop install 7zip aria2 bun duckdb fastfetch ffmpeg flac gcc gh git imagemagick innounp jq kubeconform kubectl less lessmsi libavif libjxl libwebp mediainfo minikube neovim nodejs nu opencode openssl opus-tools pnpm qaac rclone rust rustup starship ugrep uv witr x265 yt-dlp
 
     # Add gui-apps
     & scoop bucket add extras
-    & scoop install alacritty deskpins draw.io everything foxit-reader github hwinfo mediainfo-gui miniconda3 mp3tag mpc-be nomacs notepadplusplus onefetch persepolis rufus sharex sharpapp sharpkeys shutup10 taskbarx typora ueli vcredist2010 vcredist2015 vcredist2017 vcredist2019 vivaldi vscode-portable wiztree
+    & scoop install cpu-z darktable everything everythingtoolbar git-credential-manager github gpu-z handbrake helium hwinfo hyper mediainfo-gui mkvtoolnix nomacs obsidian persepolis picocrypt sharpapp shutup10 textadept windowsdesktop-runtime-lts wiztree zed
 
     # Add nonportable-apps
     & scoop bucket add nonportable
@@ -28,23 +28,11 @@ function Install-ScoopPackages($machine_type){
     #& scoop bucket add nerd-fonts
     #& scoop install open-sans raleway
 
-    # Add WSL
-    #& scoop bucket add wsl
-
-    # Add Spotify
-    #& scoop bucket add spotify https://github.com/TheRandomLabs/Scoop-Spotify.git
-    #& scoop install spotify-latest
-    #& scoop install spicetify-cli spicetify-themes
-    #& spicetify config current_theme Arc-Dark color_scheme Aritim-Dark
-    #& spicetify apply
-
     # Add apps for non-laptop PC
     if($machine_type -eq 1){
         & scoop install cpu-z crystaldiskinfo crystaldiskmark flac gimp gpu-z handbrake mkvtoolnix
     }
 }
-
-
 
 
 
