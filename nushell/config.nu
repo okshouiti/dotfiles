@@ -9,20 +9,6 @@ $env.config = {
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 def ok [] {}
 
-# Random octal
-def "ok rand" [] {
-    # ランダムに0から7までの値を3桁生成
-    let digits = [1 2 3] | each { random int 0..7 }
-
-    # 生成した3桁の値を表示
-    print $"--- ($digits | str join) ---"
-
-    # # 各桁を2進数3桁に変換し
-    let bits = $digits | each { format bits | into string | str reverse | str substring 0..2 | str reverse }
-
-    # 2進数の桁を1なら●、0なら○で表示
-    $bits | each { split chars | each {|b| if $b == '1' { '●' } else { '○' }} | str join } | str join " " | echo $in
-}
 
 # yt-dlp
 def "ok ytdl" [
