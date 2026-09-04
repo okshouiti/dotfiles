@@ -126,3 +126,16 @@ def "ok video2webp" [
         ^ffmpeg -i $target -vcodec libwebp -lossless 0 -loop 0 -preset default -an -vsync 0 -filter:v fps=($fps) -compression_level 6 -quality ($quality) $out_name
     }
 }
+
+
+def "ok compress" [file: path] {
+    let out = $"($file).7z"
+
+    if ($file | str ends-with ".safetensors") {
+        # safetensors: バランス設定 (mx=5)
+        ^7z a -t7z -m0=LZMA2 -mx=5 -mmt=on $out $file
+    } else {
+        # それ以外: 最高圧縮 (mx=9)
+        ^7z a -t7z -m0=LZMA2 -mx=9 -mmt=on $out $file
+    }
+}
