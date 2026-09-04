@@ -73,6 +73,28 @@ def "ok ytdl" [
 }
 
 
+
+def "ok helium" [] {
+    ^helium --remote-debugging-port=9222 --remote-allow-origins=* --user-data-dir=/tmp/helium-cdp
+}
+
+
+def "ok winch" [
+  url: string
+  --limit: int = 1,
+  --cdp-port: int = 9222,
+  --headful,
+  --debug] {
+    let $cdp_url: string = $"http://localhost:($cdp_port)"
+    ^node $env.WINCH_BIN $url --out ./test-download --limit $limit --cdp-url $cdp_url --headful --debug
+}
+
+
+# ================================== Multi media ==================================
+
+# avifenc --speed 4 --jobs 10 --min 20 --max 63 --codec aom --advanced end-usage=q --advanced cq-level=20 $src $dst
+
+
 def "ok video2webp" [
   --fps: int = 30
   --quality: int = 80
