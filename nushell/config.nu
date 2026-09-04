@@ -2,6 +2,10 @@ $env.config = {
     show_banner: false
 }
 
+const saku_exe = (
+    $nu.home-dir
+    | path join "repo" "saku" "_build" "native" "debug" "build" "cmd" "main" "main.exe"
+)
 
 
 #@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -73,7 +77,6 @@ def "ok ytdl" [
 }
 
 
-
 def "ok helium" [] {
     ^helium --remote-debugging-port=9222 --remote-allow-origins=* --user-data-dir=/tmp/helium-cdp
 }
@@ -87,6 +90,44 @@ def "ok winch" [
   --debug] {
     let $cdp_url: string = $"http://localhost:($cdp_port)"
     ^node $env.WINCH_BIN $url --out ./test-download --limit $limit --cdp-url $cdp_url --headful --debug
+}
+
+
+def "ok rand" [] {
+    ^$saku_exe rand
+}
+
+
+const rename_modes = ["head", "tail", "sort", "regex", "template"]
+def "nu-complete ok rename mode" [] {
+  $rename_modes
+}
+
+def "ok rename" [
+    mode: string@"nu-complete ok rename mode",
+    --pattern: string,
+    --replace: string,
+    --template: string,
+    --name,
+    --date,
+    --desc,
+    --execute
+] {
+    if $mode not-in $rename_modes {
+        error make { msg: "unknown mode." }
+    }
+
+    mut args = [rename $mode]
+
+    if $pattern != null { $args = ($args | append [--pattern $pattern]) }
+    if $replace != null { $args = ($args | append [--replace $replace]) }
+    if $template != null { $args = ($args | append [--template $template]) }
+    if $name { $args = ($args | append [--name]) }
+    if $date { $args = ($args | append [--date]) }
+    if $desc { $args = ($args | append [--desc]) }
+    if $execute { $args = ($args | append [--execute]) }
+
+    ^$saku_exe ...$args
 }
 
 
