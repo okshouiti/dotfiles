@@ -210,8 +210,38 @@ def "ok portless update" [] {
     ^portless --version
 }
 
-def "ok portless alias" [name: string, port: int] {
+const portless_aliases = {
+    opencode.wsl: 44101
+    makie.wsl: 44102
+}
+
+def "nu-complete ok portless alias" [] {
+    $portless_aliases | columns
+}
+
+# 引数なしで組み込みを選択。名前だけなら組み込み、名前とポートなら直接指定。
+# 例: ok portless alias makie.wsl → https://makie.wsl.localhost
+def "ok portless alias" [
+    name?: string@"nu-complete ok portless alias"
+    port?: int
+] {
+    let name = if $name == null {
+        $portless_aliases | columns | input list '登録するエイリアスを選択'
+    } else { $name }
+    if $name == null { return }
+    let port = if $port == null {
+        $portless_aliases | get -o $name
+    } else { $port }
+    if $port == null {
+        error make {msg: '組み込み以外のエイリアスにはポートを指定してください。'}
+    }
+    if $port < 1 or $port > 65535 {
+        error make {msg: 'ポートは 1〜65535 で指定してください。'}
+    }
     ^portless alias $name $port --force
+    if $env.LAST_EXIT_CODE != 0 {
+        error make {msg: 'portless のエイリアス登録に失敗しました。'}
+    }
     let result = (^curl.exe -sk $"https://($name).localhost/" -o NUL -w '%{http_code}' | complete)
     if $result.exit_code != 0 {
         print -e $"警告: ($name).localhost への接続に失敗しました。TLS 証明書生成などを確認してください。curl: ($result.exit_code)"
