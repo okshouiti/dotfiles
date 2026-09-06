@@ -133,7 +133,106 @@ def "ok rename" [
 
 # ================================== Multi media ==================================
 
-# avifenc --speed 4 --jobs 10 --min 20 --max 63 --codec aom --advanced end-usage=q --advanced cq-level=20 $src $dst
+const encoder_dir = ($nu.home-dir | path join "OneDrive" "asset" "encoder")
+
+# カレントディレクトリの PNG を可逆 WebP に変換する。
+def "ok webp" [] {
+    let files = ls | where type == file | where {|f| ($f.name | path parse | get extension | str lowercase) == "png" }
+    for f in $files {
+        let dest = ($f.name | path parse | update extension "webp" | path join)
+        ^cwebp -z 9 -m 6 -mt -noalpha -lossless -metadata none -progress $f.name -o $dest
+    }
+}
+
+# カレントディレクトリの PNG を HEIC に変換する。
+def "ok heic" [] {
+    let exe = ($encoder_dir | path join "heifenc.exe")
+    let files = ls | where type == file | where {|f| ($f.name | path parse | get extension | str lowercase) == "png" }
+    for f in $files {
+        ^$exe --quality 55 -p x265:preset=placebo -p x265:tu-intra-depth=4 --no-alpha --no-thumb-alpha $f.name
+    }
+}
+
+# カレントディレクトリの PNG / JPG を AVIF に変換する。
+def "ok avif" [] {
+    let files = ls | where type == file | where {|f| ($f.name | path parse | get extension | str lowercase) in [png jpg] }
+    for f in $files {
+        let dest = ($f.name | path parse | update extension "avif" | path join)
+        ^avifenc --speed 4 --jobs 10 --min 20 --max 63 --codec aom --advanced end-usage=q --advanced cq-level=30 $f.name $dest
+    }
+}
+
+# PNG / JPG / WebP を高解像度化する。同じ拡張子の入力は別名で保存する。
+def "ok realsr" [out_ext: string = "webp"] {
+    let extension = ($out_ext | str trim --left --char "." | str lowercase)
+    if ($extension | is-empty) {
+        error make {msg: "出力拡張子を指定してください。"}
+    }
+    let exe = ($encoder_dir | path join "realsr" "realsr-ncnn-vulkan.exe")
+    let files = ls | where type == file | where {|f| ($f.name | path parse | get extension | str lowercase) in [png jpg webp] }
+    for f in $files {
+        let parts = ($f.name | path parse)
+        let stem = if ($parts.extension | str lowercase) == $extension { $"realsr___($parts.stem)" } else { $parts.stem }
+        let dest = ($parts | update stem $stem | update extension $extension | path join)
+        ^$exe -i $f.name -o $dest
+    }
+}
+
+# 指定秒ごとに動画のフレームを frames ディレクトリへ抽出する。
+def "ok frames" [--rate: int = 10] {
+    if $rate <= 0 {
+        error make {msg: "抽出間隔は正の秒数を指定してください。"}
+    }
+    let files = ls | where type == file | where {|f| ($f.name | path parse | get extension | str lowercase) in [mp4 mkv webm] }
+    if ($files | is-empty) { return }
+    let dest_dir = ($env.PWD | path join "frames")
+    mkdir $dest_dir
+    for f in $files {
+        let stem = ($f.name | path parse | get stem)
+        let dest = ($dest_dir | path join $"%06d-($stem).png")
+        ^ffmpeg -i $f.name -r $"1/($rate)" -vcodec png $dest
+    }
+}
+
+# 元動画の先頭から数えたフレーム番号を指定区間に焼き込む。
+def "ok frame-number" [
+    file: path
+    --begin: string = "00:00:00"
+    --end: string = "00:00:10"
+    --tail # 元の PowerShell 同様、映像パケット数を表示する。
+] {
+    let src = ($file | path expand --strict)
+    if $tail {
+        ^ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 $src
+    } else {
+        let parts = ($src | path parse)
+        let dest = ($parts.parent | path join $"($parts.stem)---frames.mp4")
+        let filter = "drawtext=text='%{frame_num}': start_number=1: x=5+0*print(tw): y=5+0*print(th): fontcolor=black: fontsize=60: box=1: boxcolor=white: boxborderw=10"
+        ^ffmpeg -hide_banner -loglevel level+warning -stats -i $src -s 960x540 -vf $filter -ss $begin -to $end -vcodec h264_nvenc -cq 40 -preset fast -an $dest
+    }
+}
+
+# 指定区間を再エンコードせず切り出す。開始位置はキーフレームに依存する。
+def "ok video-scene" [
+    file: path
+    --begin: string = "00:00:10"
+    --end: string = "00:00:20"
+] {
+    let src = ($file | path expand --strict)
+    let seconds = [$begin $end] | each {|time|
+        if $time !~ '^\d+:[0-5]\d:[0-5]\d$' {
+            error make {msg: "時刻は HH:MM:SS 形式で指定してください。"}
+        }
+        let parts = ($time | split row ":" | into int)
+        $parts.0 * 3600 + $parts.1 * 60 + $parts.2
+    }
+    let duration = $seconds.1 - $seconds.0
+    if $duration <= 0 {
+        error make {msg: "終了時刻は開始時刻より後にしてください。"}
+    }
+    let dest = ($src | path dirname | path join $"cut___($src | path basename)")
+    ^ffmpeg -ss $begin -i $src -t $duration -codec copy $dest
+}
 
 
 def "ok video2webp" [
