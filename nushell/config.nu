@@ -126,6 +126,105 @@ def "ok rename" [
 }
 
 
+# ================================== portless (Windows) ==================================
+
+# SYSTEM で動く daemon の証明書生成には Machine スコープの OPENSSL_CONF が必要。
+# User スコープでは届かず、service install が再生成する .cmd にも設定を置かない。
+def "ok portless env" []: nothing -> bool {
+    let result = (^powershell.exe -NoProfile -NonInteractive -Command '[Environment]::GetEnvironmentVariable("OPENSSL_CONF", "Machine")' | complete)
+    if $result.exit_code != 0 { error make {msg: $result.stderr} }
+    let conf = ($result.stdout | str trim)
+    mut valid = true
+    if ($conf | is-empty) {
+        print -e '警告: OPENSSL_CONF (Machine) が未設定。SYSTEM daemon の TLS 握手が失敗します。'
+        let expected = ($nu.home-dir | path join 'scoop' 'apps' 'openssl' 'current' 'bin' 'cnf' 'openssl.cnf')
+        print -e $"管理者 PowerShell で設定: [Environment]::SetEnvironmentVariable\('OPENSSL_CONF','($expected)','Machine')"
+        $valid = false
+    } else if not ($conf | path exists) {
+        print -e $"警告: OPENSSL_CONF \(Machine) = ($conf) が実在しません。"
+        $valid = false
+    }
+    if (which openssl | is-empty) {
+        print -e '警告: openssl が PATH にありません。'
+        $valid = false
+    }
+    $valid
+}
+
+def portless-listeners []: nothing -> table {
+    let result = (^powershell.exe -NoProfile -NonInteractive -Command 'ConvertTo-Json -Compress -InputObject @(Get-NetTCPConnection -LocalPort 443 -State Listen -ErrorAction SilentlyContinue | Select-Object LocalAddress, LocalPort, OwningProcess)' | complete)
+    if $result.exit_code != 0 { error make {msg: $result.stderr} }
+    $result.stdout | from json
+}
+
+# 元の判定と同様、portless の所有確認ではなく 443 の待受を確認する。
+def "ok portless alive" []: nothing -> bool {
+    let alive = (portless-listeners | is-not-empty)
+    if not $alive { print -e '警告: portless: 443 が待受状態ではありません。' }
+    $alive
+}
+
+def "ok portless start" [] {
+    ok portless env | ignore
+    if (ok portless alive) {
+        print 'portless: 起動済みです。'
+        return
+    }
+    ^portless proxy start
+    sleep 500ms
+    ok portless alive | ignore
+}
+
+def "ok portless stop" [--force] {
+    # 通常停止に失敗しても、明示された強制停止は実行する。
+    let result = (^portless proxy stop | complete)
+    print -n $result.stdout
+    if ($result.stderr | is-not-empty) { print -en $result.stderr }
+    if $force {
+        ^powershell.exe -NoProfile -NonInteractive -Command r#'$ErrorActionPreference = "Stop"; Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { $_.CommandLine -like '*portless*proxy*start*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }'#
+    } else if $result.exit_code != 0 {
+        error make {msg: $"portless proxy stop が失敗しました: ($result.exit_code)"}
+    }
+}
+
+def "ok portless restart" [] {
+    ok portless stop --force
+    sleep 1500ms
+    ok portless start
+}
+
+def "ok portless status" [] {
+    ^portless --version
+    ^portless list
+    let pid_file = ($nu.home-dir | path join '.portless' 'proxy.pid')
+    if ($pid_file | path exists) {
+        print $"proxy.pid: (open --raw $pid_file | str trim)"
+    }
+    portless-listeners
+}
+
+def "ok portless update" [] {
+    ok portless stop --force
+    ^bun add -g portless@latest
+    ok portless start
+    ^portless --version
+}
+
+def "ok portless alias" [name: string, port: int] {
+    ^portless alias $name $port --force
+    let result = (^curl.exe -sk $"https://($name).localhost/" -o NUL -w '%{http_code}' | complete)
+    if $result.exit_code != 0 {
+        print -e $"警告: ($name).localhost への接続に失敗しました。TLS 証明書生成などを確認してください。curl: ($result.exit_code)"
+    } else {
+        print $"($name).localhost -> HTTP ($result.stdout)"
+    }
+}
+
+def "ok portless unalias" [name: string] {
+    ^portless alias --remove $name
+}
+
+
 # ================================== Multi media ==================================
 
 const encoder_dir = ($nu.home-dir | path join "OneDrive" "asset" "encoder")
