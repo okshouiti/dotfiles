@@ -24,7 +24,7 @@ def "ok ytdl" [
 ] {
     use std
 
-    mut $options = [
+    mut options = [
         "--js-runtimes"
             "bun"
         "--format-sort"
@@ -42,13 +42,9 @@ def "ok ytdl" [
             "【%(uploader)s】　%(title)s　%(id)s.%(ext)s"
     ]
 
-    # Youtubeではav1よりvp9を優先
-    if ($url | is-empty) {
-    } else if ($url | str contains "www.youtube.com") {
-        std log info "Site: Youtube"
-        $options = ($options | append ["--format-sort" "res,vcodec:vp9"])
-    } else {
-        std log info "Site: Not Youtube"
+    if ($url | is-not-empty) {
+        let site = if ($url | str contains "www.youtube.com") { "Youtube" } else { "Not Youtube" }
+        std log info $"Site: ($site)"
     }
 
     if $audioonly {
@@ -70,8 +66,7 @@ def "ok ytdl" [
         return
     }
 
-    let $cmd = $options | str join ' '
-    std log info $cmd
+    std log info ($options | str join ' ')
 
     ^yt-dlp ...$options
 }
@@ -88,7 +83,7 @@ def "ok winch" [
   --cdp-port: int = 9222,
   --headful,
   --debug] {
-    let $cdp_url: string = $"http://localhost:($cdp_port)"
+    let cdp_url = $"http://localhost:($cdp_port)"
     ^node $env.WINCH_BIN $url --out ./test-download --limit $limit --cdp-url $cdp_url --headful --debug
 }
 
@@ -135,30 +130,35 @@ def "ok rename" [
 
 const encoder_dir = ($nu.home-dir | path join "OneDrive" "asset" "encoder")
 
+# カレントディレクトリの通常ファイルを拡張子で絞り込む。
+def media-files [extensions: list<string>]: nothing -> list<string> {
+    ls
+    | where type == file
+    | get name
+    | where {|name| ($name | path parse | get extension | str lowercase) in $extensions }
+}
+
 # カレントディレクトリの PNG を可逆 WebP に変換する。
 def "ok webp" [] {
-    let files = ls | where type == file | where {|f| ($f.name | path parse | get extension | str lowercase) == "png" }
-    for f in $files {
-        let dest = ($f.name | path parse | update extension "webp" | path join)
-        ^cwebp -z 9 -m 6 -mt -noalpha -lossless -metadata none -progress $f.name -o $dest
+    for file in (media-files [png]) {
+        let dest = ($file | path parse | update extension "webp" | path join)
+        ^cwebp -z 9 -m 6 -mt -noalpha -lossless -metadata none -progress $file -o $dest
     }
 }
 
 # カレントディレクトリの PNG を HEIC に変換する。
 def "ok heic" [] {
     let exe = ($encoder_dir | path join "heifenc.exe")
-    let files = ls | where type == file | where {|f| ($f.name | path parse | get extension | str lowercase) == "png" }
-    for f in $files {
-        ^$exe --quality 55 -p x265:preset=placebo -p x265:tu-intra-depth=4 --no-alpha --no-thumb-alpha $f.name
+    for file in (media-files [png]) {
+        ^$exe --quality 55 -p x265:preset=placebo -p x265:tu-intra-depth=4 --no-alpha --no-thumb-alpha $file
     }
 }
 
 # カレントディレクトリの PNG / JPG を AVIF に変換する。
 def "ok avif" [] {
-    let files = ls | where type == file | where {|f| ($f.name | path parse | get extension | str lowercase) in [png jpg] }
-    for f in $files {
-        let dest = ($f.name | path parse | update extension "avif" | path join)
-        ^avifenc --speed 4 --jobs 10 --min 20 --max 63 --codec aom --advanced end-usage=q --advanced cq-level=30 $f.name $dest
+    for file in (media-files [png jpg]) {
+        let dest = ($file | path parse | update extension "avif" | path join)
+        ^avifenc --speed 4 --jobs 10 --min 20 --max 63 --codec aom --advanced end-usage=q --advanced cq-level=30 $file $dest
     }
 }
 
@@ -169,12 +169,11 @@ def "ok realsr" [out_ext: string = "webp"] {
         error make {msg: "出力拡張子を指定してください。"}
     }
     let exe = ($encoder_dir | path join "realsr" "realsr-ncnn-vulkan.exe")
-    let files = ls | where type == file | where {|f| ($f.name | path parse | get extension | str lowercase) in [png jpg webp] }
-    for f in $files {
-        let parts = ($f.name | path parse)
+    for file in (media-files [png jpg webp]) {
+        let parts = ($file | path parse)
         let stem = if ($parts.extension | str lowercase) == $extension { $"realsr___($parts.stem)" } else { $parts.stem }
         let dest = ($parts | update stem $stem | update extension $extension | path join)
-        ^$exe -i $f.name -o $dest
+        ^$exe -i $file -o $dest
     }
 }
 
@@ -183,14 +182,14 @@ def "ok frames" [--rate: int = 10] {
     if $rate <= 0 {
         error make {msg: "抽出間隔は正の秒数を指定してください。"}
     }
-    let files = ls | where type == file | where {|f| ($f.name | path parse | get extension | str lowercase) in [mp4 mkv webm] }
+    let files = media-files [mp4 mkv webm]
     if ($files | is-empty) { return }
     let dest_dir = ($env.PWD | path join "frames")
     mkdir $dest_dir
-    for f in $files {
-        let stem = ($f.name | path parse | get stem)
+    for file in $files {
+        let stem = ($file | path parse | get stem)
         let dest = ($dest_dir | path join $"%06d-($stem).png")
-        ^ffmpeg -i $f.name -r $"1/($rate)" -vcodec png $dest
+        ^ffmpeg -i $file -r $"1/($rate)" -vcodec png $dest
     }
 }
 
@@ -241,15 +240,11 @@ def "ok video2webp" [
 ] {
     use std
 
-    let $files = ls ...(glob *.{mp4,mkv,webm})
+    for file in (media-files [mp4 mkv webm]) {
+        let dest = ($file | path parse | update extension "webp" | path join)
+        std log info $"($file) → ($dest)"
 
-    let $range = 0..($files | length | $in - 1)
-    for $it in $range {
-        let $target: string = $files | get $it | get name | str replace -r '^(.+)\\' ''
-        let $out_name = $target | str replace -r '(.+).(mp4|mkv|webm)' '$1.webp'
-        std log info $"($target) → ($out_name)"
-
-        ^ffmpeg -i $target -vcodec libwebp -lossless 0 -loop 0 -preset default -an -vsync 0 -filter:v fps=($fps) -compression_level 6 -quality ($quality) $out_name
+        ^ffmpeg -i $file -vcodec libwebp -lossless 0 -loop 0 -preset default -an -vsync 0 -filter:v fps=($fps) -compression_level 6 -quality $quality $dest
     }
 }
 
@@ -257,11 +252,7 @@ def "ok video2webp" [
 def "ok compress" [file: path] {
     let out = $"($file).7z"
 
-    if ($file | str ends-with ".safetensors") {
-        # safetensors: バランス設定 (mx=5)
-        ^7z a -t7z -m0=LZMA2 -mx=5 -mmt=on $out $file
-    } else {
-        # それ以外: 最高圧縮 (mx=9)
-        ^7z a -t7z -m0=LZMA2 -mx=9 -mmt=on $out $file
-    }
+    # safetensors はバランス設定、それ以外は最高圧縮。
+    let level = if ($file | str ends-with ".safetensors") { 5 } else { 9 }
+    ^7z a -t7z -m0=LZMA2 $"-mx=($level)" -mmt=on $out $file
 }
