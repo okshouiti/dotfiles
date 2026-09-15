@@ -46,6 +46,7 @@ def "ok ytdl" [
   url?: string
   --audioonly
   --limit_fhd
+  --low_res
   --batchfile: string
   --cookies: string
 ] {
@@ -78,6 +79,8 @@ def "ok ytdl" [
         $options = ($options | append ["--format" "bestaudio" "--extract-audio"])
     } else if $limit_fhd {
         $options = ($options | append ["--format" "bv[height<=1080]+ba"])
+    } else if $low_res {
+        $options = ($options | append ["--format" "bv[height<=360]+ba"])
     }
 
     # ログイン状態でのみ落とせる動画用にクッキー設定
