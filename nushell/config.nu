@@ -14,6 +14,33 @@ const saku_exe = (
 def ok [] {}
 
 
+def --env "ok start hype" [] {
+    cd ~/repo/hype
+    ^bun run dev
+}
+
+def --env "ok start promhub" [] {
+    cd ~/repo/promhub
+    ^bun run dev
+}
+
+def require-windows [] {
+    if $nu.os-info.name != 'windows' {
+        error make {msg: 'Windows専用です。'}
+    }
+}
+
+def "ok start opencode" [] {
+    require-windows
+    ^wsl.exe --distribution openSUSE-Tumbleweed --exec bash -lc 'exec opencode2 serve --hostname 127.0.0.1 --port 44101'
+}
+
+def "ok start makie" [] {
+    require-windows
+    ^wsl.exe --distribution openSUSE-Tumbleweed --exec bash -lc 'exec bun run --cwd "$HOME/repo/makie" dev'
+}
+
+
 # yt-dlp
 def "ok ytdl" [
   url?: string
