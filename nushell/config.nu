@@ -8,9 +8,7 @@ const saku_exe = (
 )
 
 
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@  Custom Command  @@@@@@@@@@@@@@@@@@@@@@@@@
-#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# ================================ Custom Command =================================
 def ok [] {}
 
 
@@ -155,8 +153,7 @@ def "ok rename" [
     ^$saku_exe ...$args
 }
 
-
-# ================================== portless (Windows) ==================================
+# =================================== portless ====================================
 
 # SYSTEM で動く daemon の証明書生成には Machine スコープの OPENSSL_CONF が必要。
 # User スコープでは届かず、service install が再生成する .cmd にも設定を置かない。
@@ -414,4 +411,26 @@ def "ok compress" [file: path] {
     # safetensors はバランス設定、それ以外は最高圧縮。
     let level = if ($file | str ends-with ".safetensors") { 5 } else { 9 }
     ^7z a -t7z -m0=LZMA2 $"-mx=($level)" -mmt=on $out $file
+}
+
+# =============================== Command Override ================================
+
+# scoop: cleanup after install/update
+def --wrapped scoop [...rest] {
+    require-windows
+
+    ^scoop ...$rest
+
+    if $env.LAST_EXIT_CODE != 0 { return }
+
+    let sub = $rest | get 0? | default ""
+
+    # `scoop update`はScoop本体の更新なので対象外
+    if $sub in [install update] and ($rest | length) > 1 {
+        if ($rest | any {|a| $a in ["-g" "--global"] }) {
+            ^scoop cleanup '*' -g -k
+        } else {
+            ^scoop cleanup '*' -k
+        }
+    }
 }
