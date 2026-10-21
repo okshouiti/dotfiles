@@ -7,6 +7,14 @@ const saku_exe = (
     | path join "repo" "saku" "_build" "native" "debug" "build" "cmd" "main" "main.exe"
 )
 
+def media-files [extensions: list<string>]: nothing -> list<string> {
+    ls
+    | where type == file
+    | get name
+    | where {|name| ($name | path parse | get extension | str lowercase) in $extensions }
+}
+
+
 
 # ================================ Custom Command =================================
 def ok [] {}
@@ -44,17 +52,19 @@ def "ok ytdl" [
   url?: string
   --audioonly
   --limit_fhd
-  --low_res
+  --list_formats # フォーマット一覧を表示するだけ（ダウンロードしない）
+  --format: string # フォーマットを直接指定（例: 616+251）
   --batchfile: string
   --cookies: string
 ] {
     use std
 
     mut options = [
+        "--no-js-runtimes" # デフォルトのdenoを無効化
         "--js-runtimes"
-            "bun"
+            "node"
         "--format-sort"
-            "res,vcodec:vp9"
+            "res,vcodec:av01" # 同解像度内の優先度 av1 > vp9.2 > vp9 > h265 > h264 ...
         "--embed-metadata"
         "--embed-subs"
         "--sub-langs"
@@ -73,12 +83,15 @@ def "ok ytdl" [
         std log info $"Site: ($site)"
     }
 
-    if $audioonly {
+    if $list_formats {
+        $options = ($options | append "--list-formats")
+    } else if $format != null {
+        $options = ($options | append ["--format" $format])
+        std log info $format
+    } else if $audioonly {
         $options = ($options | append ["--format" "bestaudio" "--extract-audio"])
     } else if $limit_fhd {
         $options = ($options | append ["--format" "bv[height<=1080]+ba"])
-    } else if $low_res {
-        $options = ($options | append ["--format" "bv[height<=360]+ba"])
     }
 
     # ログイン状態でのみ落とせる動画用にクッキー設定
@@ -98,6 +111,7 @@ def "ok ytdl" [
 
     ^yt-dlp ...$options
 }
+
 
 
 def "ok helium" [] {
@@ -152,6 +166,31 @@ def "ok rename" [
 
     ^$saku_exe ...$args
 }
+
+# base の拡張子が存在しない target のファイルを一覧する
+def "ok orphan list" [base: string, target: string, --rm] {
+    let base_stems = (media-files [$base] | path parse | get stem)
+    let orphans = (media-files [$target] | where {|f|
+        ($f | path parse | get stem) not-in $base_stems
+    })
+    if $rm {
+        $orphans | each {|f| rm $f }
+        print $"削除しました: ($orphans | length) 枚"
+    } else {
+        $orphans
+    }
+}
+
+# 写真用のプリセット: ARW が削除済みで取り残された HIF を対象にする。
+def "ok orphan photo" [--rm] {
+    if $rm {
+        ok orphan list arw hif --rm
+    } else {
+        ok orphan list arw hif
+    }
+}
+
+
 
 # =================================== portless ====================================
 
@@ -286,12 +325,12 @@ def "ok portless unalias" [name: string] {
 
 const encoder_dir = ($nu.home-dir | path join "OneDrive" "asset" "encoder")
 
-# カレントディレクトリの通常ファイルを拡張子で絞り込む。
-def media-files [extensions: list<string>]: nothing -> list<string> {
-    ls
-    | where type == file
-    | get name
-    | where {|name| ($name | path parse | get extension | str lowercase) in $extensions }
+# 指定ファイルの ReplayGain タグを設定する。目標音量は既定 -22 LUFS、更新日時は保持する。
+def "ok replaygain" [
+    file: path
+    --loudness: int = -22 # 目標音量 (LUFS)
+] {
+    ^rsgain custom --preserve-mtimes --tagmode=i $"--loudness=($loudness)" $file
 }
 
 # カレントディレクトリの PNG を可逆 WebP に変換する。
@@ -315,6 +354,14 @@ def "ok avif" [] {
     for file in (media-files [png jpg]) {
         let dest = ($file | path parse | update extension "avif" | path join)
         ^avifenc --speed 4 --jobs 10 --min 20 --max 63 --codec aom --advanced end-usage=q --advanced cq-level=30 $file $dest
+    }
+}
+
+# カレントディレクトリの HIF (HEIF) を JPG に変換する。
+def "ok decode hif" [] {
+    for file in (media-files [hif]) {
+        let out = ($file | path parse | update extension jpg | path join)
+        ^ffmpeg -y -i $file -q:v 2 -frames:v 1 -update 1 $out
     }
 }
 
