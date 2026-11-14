@@ -361,12 +361,86 @@ def "ok portless unalias" [name: string] {
 
 const encoder_dir = ($nu.home-dir | path join "OneDrive" "asset" "encoder")
 
+# MKV の音声トラックごとに ReplayGain を測定し、各トラックのタグとして書き込む。
+def "ok replaygain-mkv" [
+    file: path
+    --loudness: int = -22 # 目標音量 (LUFS)
+] {
+    let file = ($file | path expand)
+    let mtime = (ls $file | get 0.modified)
+    let tmp = (mktemp --directory)
+
+    let count = (
+        ^ffprobe -v error -select_streams a -show_entries stream=index -of csv=p=0 $file
+        | lines
+        | where {|l| ($l | str trim) != "" }
+        | length
+    )
+    if $count == 0 {
+        rm --recursive --force $tmp
+        error make { msg: $"音声トラックがありません: ($file)" }
+    }
+
+    try {
+        for i in 0..<$count {
+            let flac = ($tmp | path join $"track($i).flac")
+            let xml = ($tmp | path join $"rg($i).xml")
+
+            # 1. i 番目の音声トラックを一時 FLAC に書き出す
+            let enc = (^ffmpeg -v error -y -i $file -map $"0:a:($i)" -c:a flac $flac | complete)
+            if $enc.exit_code != 0 {
+                error make { msg: $"ffmpeg 失敗 (音声トラック ($i + 1)): ($enc.stderr)" }
+            }
+
+            # 2. rsgain で測定のみ (タグは書かない)
+            let scan = (^rsgain custom --quiet --output $"--loudness=($loudness)" $flac | complete)
+            if $scan.exit_code != 0 {
+                error make { msg: $"rsgain 失敗 (音声トラック ($i + 1)): ($scan.stderr)" }
+            }
+
+            # 3. 数値4つ (Loudness, Gain, Peak, Peak dB) を拾う
+            let m = ($scan.stdout | parse --regex '(-?\d+\.\d+)\s+(-?\d+\.\d+)\s+(\d+\.\d+)\s+(-?\d+\.\d+)\s+\w+')
+            if ($m | is-empty) {
+                error make { msg: $"rsgain の出力を解析できません: ($scan.stdout)" }
+            }
+            let gain = $m.0.capture1
+            let peak = $m.0.capture2
+
+            # 4. トラック用タグ XML を作って mkvpropedit で書き込む
+            $"<?xml version='1.0'?>
+<Tags><Tag><Targets/>
+<Simple><Name>REPLAYGAIN_TRACK_GAIN</Name><String>($gain) dB</String></Simple>
+<Simple><Name>REPLAYGAIN_TRACK_PEAK</Name><String>($peak)</String></Simple>
+</Tag></Tags>" | save --force $xml
+
+            # selector 内のコロンと Windows のドライブ文字が衝突しないよう、相対パスで渡す
+            let edit = (do { cd $tmp; ^mkvpropedit $file --tags $"track:a($i + 1):rg($i).xml" } | complete)
+            if $edit.exit_code != 0 {
+                error make { msg: $"mkvpropedit 失敗 (音声トラック ($i + 1)): ($edit.stdout)" }
+            }
+            print $"音声トラック ($i + 1): ($gain) dB / peak ($peak)"
+        }
+    } catch {|e|
+        rm --recursive --force $tmp
+        error make { msg: $e.msg }
+    }
+
+    rm --recursive --force $tmp
+    # --preserve-mtimes 相当: 更新日時を元に戻す
+    touch --modified --timestamp $mtime $file
+}
+
 # 指定ファイルの ReplayGain タグを設定する。目標音量は既定 -22 LUFS、更新日時は保持する。
+# MKV の場合のみ、音声トラックごとに測定してトラック単位のタグとして書き込む。
 def "ok replaygain" [
     file: path
     --loudness: int = -22 # 目標音量 (LUFS)
 ] {
-    ^rsgain custom --preserve-mtimes --tagmode=i $"--loudness=($loudness)" $file
+    if ($file | path parse | get extension | str lowercase) == "mkv" {
+        ok replaygain-mkv $file --loudness $loudness
+    } else {
+        ^rsgain custom --preserve-mtimes --tagmode=i $"--loudness=($loudness)" $file
+    }
 }
 
 # カレントディレクトリの PNG を可逆 WebP に変換する。
