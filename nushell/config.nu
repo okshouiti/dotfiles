@@ -2,6 +2,35 @@ $env.config = {
     show_banner: false
 }
 
+# nurc.nu は ~/repo 配下の現在のディレクトリだけで有効にする。
+# ディレクトリとファイルの実体を確認し、リンク経由の範囲外参照を防ぐ。
+def project-file-is-trusted [directory: string]: nothing -> bool {
+    try {
+        let root = ($nu.home-dir | path join 'repo' | path expand --strict)
+        let directory = ($directory | path expand --strict)
+        $directory | path relative-to $root | ignore
+        let file = ($directory | path join 'nurc.nu' | path expand --strict)
+        $file | path relative-to $root | ignore
+        ($file | path type) == 'file'
+    } catch {
+        false
+    }
+}
+
+$env.config.hooks.env_change.PWD = (
+    $env.config.hooks.env_change.PWD? | default [] | append [
+        {
+            condition: {|_, _| 'dotfiles-project' in (overlay list | where active | get name) }
+            # overlay は定義を記憶するため、前の export も隠してから解除する。
+            code: 'hide dotfiles-project *; overlay hide dotfiles-project --keep-env [PWD]'
+        }
+        {
+            condition: {|_, after| project-file-is-trusted $after }
+            code: 'overlay use ./nurc.nu as dotfiles-project --reload'
+        }
+    ]
+)
+
 const saku_exe = (
     $nu.home-dir
     | path join "repo" "saku" "_build" "native" "debug" "build" "cmd" "main" "main.exe"
