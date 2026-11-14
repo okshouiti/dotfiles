@@ -59,6 +59,13 @@ def --env "ok start promhub" [] {
     ^bun run dev
 }
 
+# 実行元のディレクトリをルートとして起動する。
+def --env "ok start kikoeru" [] {
+    let root = $env.PWD
+    cd ~/repo/kikoeru
+    ^bun run dev -- --root $root
+}
+
 def require-windows [] {
     if $nu.os-info.name != 'windows' {
         error make {msg: 'Windows専用です。'}
