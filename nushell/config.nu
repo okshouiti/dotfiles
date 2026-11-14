@@ -74,7 +74,7 @@ def require-windows [] {
 
 def "ok start opencode" [] {
     require-windows
-    ^wsl.exe --distribution openSUSE-Tumbleweed --exec bash -lc 'exec opencode2 serve --hostname 127.0.0.1 --port 44101'
+    ^wsl.exe --distribution openSUSE-Tumbleweed --exec bash -lc 'exec opencode2 serve --hostname 127.0.0.1 --port 44444'
 }
 
 def "ok start makie" [] {
