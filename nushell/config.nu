@@ -49,18 +49,19 @@ def media-files [extensions: list<string>]: nothing -> list<string> {
 def ok [] {}
 
 
-def --env "ok start hype" [] {
+# 起動先への移動は関数内に留め、呼び出し元の現在地は変えない。
+def "ok start hype" [] {
     cd ~/repo/hype
     ^bun run dev
 }
 
-def --env "ok start promhub" [] {
+def "ok start promhub" [] {
     cd ~/repo/promhub
     ^bun run dev
 }
 
 # 実行元のディレクトリをルートとして起動する。
-def --env "ok start kikoeru" [] {
+def "ok start kikoeru" [] {
     let root = $env.PWD
     cd ~/repo/kikoeru
     ^bun run dev -- --root $root
