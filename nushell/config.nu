@@ -49,6 +49,19 @@ def media-files [extensions: list<string>]: nothing -> list<string> {
 def ok [] {}
 
 
+# トークンを露出させずに、ProtonPassに安全にログイン。
+def "ok proton login" [] {
+    let token = (input --suppress-output 'アクセストークン: ')
+    if ($token | is-empty) {
+        error make {msg: 'アクセストークンを入力してください。'}
+    }
+    ^pass-cli login --pat $token
+    if $env.LAST_EXIT_CODE != 0 {
+        error make {msg: 'Proton Pass へのログインに失敗しました。'}
+    }
+}
+
+
 # 起動先への移動は関数内に留め、呼び出し元の現在地は変えない。
 def "ok start hype" [] {
     cd ~/repo/hype
